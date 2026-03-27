@@ -1,0 +1,210 @@
+[
+  {
+    "title": "Teach-by-Touch Robotic Arm",
+    "desc": "Physically move joints to record a sequence, insert a cartridge, press play. Custom DC motors, 3D-printed gearboxes, no programming needed.",
+    "group": "Year 2",
+    "tags": [
+      { "label": "Physical Computing", "style": "tag-y2" },
+      { "label": "Group",              "style": "tag-group" }
+    ],
+    "featured": true,
+    "image": "Project_Image_Gizmo.png",
+    "file": "Project_Gizmo.pdf",
+    "website": ""
+  },
+  {
+  "title": "Perfect Pantograph — Research",
+  "desc": "Researched, interviewed and surveyed Design & Technology students to identify where current downfalls are.",
+  "group": "Year 2",
+  "tags": [
+    { "label": "Product Design Engineering", "style": "tag-y2" },
+    { "label": "Group", "style": "tag-group" }
+  ],
+  "featured": true,
+  "image": "Project_Image_PDE.png",
+  "file": "Project_Group_PDE.pdf",
+  "website": ""
+},
+{
+  "title": "Perfect Pantograph — Ideation",
+  "desc": "Designed a desktop cutting tool that helps D&T students translate drawings into scale models. Developed from research insights to a final resolved design.",
+  "group": "Year 2",
+  "tags": [
+    { "label": "Product Design Engineering", "style": "tag-y2" },
+    { "label": "Individual", "style": "tag-solo" }
+  ],
+  "featured": true,
+  "image": "Project_Image_Perfect_Pantograph.png",
+  "file": "Project_Perfect_Pantograph.pdf",
+  "website": ""
+},
+  {
+    "title": "Aerodynamic Cabriolet - Individual",
+    "desc": "Designed a four-seat cabriolet body through CFD in Ansys Workbench. Cut drag by 14% iteratively, then 3D printed and wind-tunnel validated.",
+    "group": "Year 2",
+    "tags": [
+      { "label": "Thermofluids", "style": "tag-y2" },
+      { "label": "Individual",   "style": "tag-solo" }
+    ],
+    "featured": true,
+    "image": "Project_Image_Individual_Thermo.png",
+    "file": "Project_Individual_Thermo.pdf",
+    "website": ""
+  },
+  {
+    "title": "Cabriolet & Battery - Group",
+    "desc": "Wind tunnel testing and CFD validation of car and battery design. Includes Gantt, team contributions breakdown, and full comparative analysis.",
+    "group": "Year 2",
+    "tags": [
+      { "label": "Thermofluids", "style": "tag-y2" },
+      { "label": "Group",        "style": "tag-group" }
+    ],
+    "featured": true,
+    "image": "Project_Image_Group_Thermo.png",
+    "file": "Project_Group_Thermo.pdf",
+    "website": ""
+  },
+  {
+    "title": "Long-Haul Aircraft Comfort - Research",
+    "desc": "122-person survey, stakeholder mapping across passengers, crew, maintenance and procurement. Benchmarked major seat manufacturers.",
+    "group": "Year 2",
+    "tags": [
+      { "label": "Sustainable Design",   "style": "tag-y2" },
+      { "label": "Group", "style": "tag-group" }
+    ],
+    "featured": false,
+    "image": "Project_Image_Group_SDE.png",
+    "file": "Project_Group_SDE.pdf",
+    "website": ""
+  },
+  {
+    "title": "Long-Haul Aircraft Comfort - Ideation",
+    "desc": "Modular seat redesign with adjustable geometry and separable soft goods, informed by a 122-person survey and full stakeholder mapping.",
+    "group": "Year 2",
+    "tags": [
+      { "label": "Sustainable Design",       "style": "tag-y2" },
+      { "label": "Individual", "style": "tag-solo" }
+    ],
+    "featured": false,
+    "image": "Project_Image_Individual_SDE.png",
+    "file": "Project_Individual_SDE.pdf",
+    "website": ""
+  },
+  {
+    "title": "Cycling Shoe Attachment",
+    "desc": "A neoprene toecap and BOA-laced heel strap that clips onto any office shoe, so you can cycle to work without changing footwear.",
+    "group": "Year 1",
+    "tags": [
+      { "label": "Design Principles",   "style": "tag-y1" },
+      { "label": "Individual", "style": "tag-solo" }
+    ],
+    "featured": false,
+    "image": "Project_Image_Pedal_Ready.png",
+    "file": "Project_DEP.pdf",
+    "website": ""
+  },
+  {
+    "title": "Rhythm Rush - Research",
+    "desc": "Researched how concert-goers experience queuing. Ran user interviews and surveys to uncover the social awkwardness and boredom of waiting.",
+    "group": "Year 1",
+    "tags": [
+      { "label": "Human Centred Design",   "style": "tag-y1" },
+      { "label": "Group", "style": "tag-group" }
+    ],
+    "featured": false,
+    "image": "Project_Image_HCD.png",
+    "file": "Project_HCD.pdf",
+    "website": ""
+  },
+  {
+    "title": "Rhythm Rush - Development",
+    "desc": "A motion-tracked dance battle game for concert queues. Up to four players compete via body-tracking on a large screen, scored on creativity and rhythm.",
+    "group": "Year 1",
+    "tags": [
+      { "label": "Human Centred Design",   "style": "tag-y1" },
+      { "label": "Group", "style": "tag-group" }
+    ],
+    "featured": false,
+    "image": "Project_Image_Rhythm_Rush.png",
+    "file": "Project_Rhythm_Rush.pdf",
+    "website": ""
+  },
+  {
+    "title": "Child-Friendly Hand Mixer",
+    "desc": "Reverse engineering report- disassembly, materials identification, manufacturing process analysis.",
+    "group": "Year 1",
+    "tags": [
+      { "label": "Materials",         "style": "tag-y1" },
+      { "label": "Individual", "style": "tag-solo" }
+    ],
+    "featured": false,
+    "image": "Project_Image_REVENG.png",
+    "file": "Project_REVENG.pdf",
+    "website": ""
+  },
+  {
+    "title": "Phone Stand CAD",
+    "desc": "Fusion 360 - technical drawings, tolerance and fit, prototyping and modelling.",
+    "group": "Year 1",
+    "tags": [
+      { "label": "Materials",         "style": "tag-y1" },
+      { "label": "Individual", "style": "tag-solo" }
+    ],
+    "featured": false,
+    "image": "Project_Image_CAD.png",
+    "file": "Project_CAD.pdf",
+    "website": ""
+  },
+  {
+    "title": "Logo Design",
+    "desc": "Just a small thing on making a logo because I thought it was cool",
+    "group": "Personal",
+    "tags": [
+      { "label": "Figma",   "style": "tag-personal" },
+      { "label": "UI", "style": "tag-personal" }
+    ],
+    "featured": false,
+    "image": "Project_Image_Logo_Design.png",
+    "file": "Project_Logo_Design.pdf",
+    "website": ""
+  },
+  {
+    "title": "Duck Jam - Game Jam Winner",
+    "desc": "Won first place in Duck Sauce Game Jam. Autoscrolling river game where collecting ducks layers a live melody.",
+    "group": "Personal",
+    "tags": [
+      { "label": "Game Jam",  "style": "tag-personal" },
+      { "label": "Unity / C#", "style": "tag-personal" }
+    ],
+    "featured": true,
+    "image": "https://img.itch.zone/aW1hZ2UvMTk0NDkyNi8xMTQzODA4NC5wbmc=/794x1000/0X8bjq.png",
+    "file": "",
+    "website": "https://ruaridhm16.itch.io/duck-jam"
+  },
+  {
+    "title": "Abyssal - Game Jam Winner",
+    "desc": "Won first place in Duck Sauce Game Jam. 2D underwater exploration with narrative discovery.",
+    "group": "Personal",
+    "tags": [
+      { "label": "Game Jam",  "style": "tag-personal" },
+      { "label": "Unity / C#", "style": "tag-personal" }
+    ],
+    "featured": true,
+    "image": "https://img.itch.zone/aW1hZ2UvMjU0ODk4Ny8xNTE2NzI0OC5wbmc=/794x1000/BbIYJF.png",
+    "file": "",
+    "website": "https://ruaridhm16.itch.io/abyssal"
+  },
+  {
+    "title": "Dodgy Double Decker",
+    "desc": "3D bus-driving game, with online leaderboard. Did all game design and programming in Unity using C#.",
+    "group": "Personal",
+    "tags": [
+      { "label": "Game",  "style": "tag-personal" },
+      { "label": "Unity / C#", "style": "tag-personal" }
+    ],
+    "featured": false,
+    "image": "https://img.itch.zone/aW1hZ2UvMjU4Nzg4My8xNTQwOTExMS5wbmc=/794x1000/TguMKf.png",
+    "file": "",
+    "website": "https://ruaridhm16.itch.io/dodgy-double-decker"
+  }
+]

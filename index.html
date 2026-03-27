@@ -1,54 +1,683 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" href="logo-light.png" media="(prefers-color-scheme: light)" />
+  <link rel="icon" href="logo-dark.png" media="(prefers-color-scheme: dark)" />
   <title>Ruaridh Murdoch</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/embla-carousel/embla-carousel.umd.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
-  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&display=swap" rel="stylesheet" />
+    :root {
+      --accent: #4C47E2;
+      --black: #111;
+      --mid: #777;
+      --border: #e5e5e5;
+      --bg: #ffffff;
+      --shadow: #d0d0d0;
+    }
 
-  <!-- DNS Prefetch for performance -->
-  <link rel="dns-prefetch" href="//ruaridhm16.itch.io" />
-  <link rel="preconnect" href="https://ruaridhm16.itch.io" crossorigin />
-  <link rel="dns-prefetch" href="//www.linkedin.com" />
-  <link rel="preconnect" href="https://www.linkedin.com" crossorigin />
+    html.dark {
+      --black: #f0f0f0;
+      --mid: #888;
+      --border: #2a2a2a;
+      --bg: #111111;
+      --shadow: #000000;
+    }
 
-  <!-- Styles -->
-  <link rel="stylesheet" href="style.css" />
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--bg);
+      color: var(--black);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1.6fr;
+      padding: 72px;
+      gap: 64px;
+      align-items: center;
+      position: relative;
+    }
+    .hero-left { display: flex; flex-direction: column; }
+
+    .logo {
+      width: 60px; height: 60px;
+      border-radius: 9px;
+      margin-bottom: 56px;
+      flex-shrink: 0;
+      cursor: pointer;
+      background: url('logo-light.png') center/cover no-repeat;
+      transition: transform 0.15s ease, opacity 0.15s ease;
+    }
+    html.dark .logo { background: url('logo-dark.png') center/cover no-repeat; }
+    .logo:hover  { opacity: 0.75; }
+    .logo:active { transform: scale(0.9); }
+
+    h1 { font-size: clamp(38px, 4.5vw, 58px); font-weight: 700; letter-spacing: -2px; line-height: 1.05; }
+    .desc { margin-top: 20px; font-size: 14px; font-weight: 400; color: var(--mid); line-height: 1.75; max-width: 360px; }
+
+    /* ── SCATTER LINKS ── */
+    .scatter-link { display: inline-block; cursor: pointer; text-decoration: none; overflow: visible; }
+    .scatter-link .s-outer { display: inline-block; overflow: visible; }
+    .scatter-link .s-inner { display: inline-block; }
+    .scatter-link .s-char  { display: inline-block; user-select: none; line-height: 1; }
+
+    .cv-link { margin-top: 36px; }
+    .cv-link .s-char { font-size: clamp(16px, 1.8vw, 22px); font-weight: 500; color: var(--accent); letter-spacing: -0.2px; opacity: 0.8; }
+    .contact-scatter .s-char { font-size: 13px; font-weight: 500; color: var(--mid); transition: color 0.2s; }
+    .contact-scatter:hover .s-char { color: var(--accent); }
+
+    /* ── PDF PANEL ── */
+    .pdf-panel { width: 100%; display: flex; flex-direction: column; }
+
+    .pdf-viewer {
+      width: 100%;
+      aspect-ratio: 1.414 / 1;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      background: #f3f3f3;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 5px 5px 0 0 var(--shadow);
+      transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
+      position: relative;
+    }
+    html.dark .pdf-viewer { background: #1a1a1a; }
+
+    .pdf-canvas-wrap { position: relative; flex: 1; overflow: hidden; background: #fff; }
+    html.dark .pdf-canvas-wrap { background: #1a1a1a; }
+
+    #pdfCanvas, #pdfCanvasNext {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      display: block; object-fit: contain;
+    }
+    #pdfCanvasNext { opacity: 0; transition: opacity 0.2s ease; }
+    #pdfCanvasNext.show { opacity: 1; }
+    #pdfCanvas { transition: opacity 0.2s ease; }
+    #pdfCanvas.hide { opacity: 0; }
+
+    /* ── CLICK ZONES — arrows adapt to light/dark content ── */
+    .pdf-zone {
+      position: absolute; top: 0; bottom: 0;
+      width: 38%;
+      cursor: pointer;
+      z-index: 2;
+      display: flex; align-items: center;
+      opacity: 0;
+      transition: opacity 0.18s;
+    }
+    .pdf-zone:hover { opacity: 1; }
+    .pdf-zone.prev { left: 0; justify-content: flex-start; padding-left: 14px; }
+    .pdf-zone.next { right: 0; justify-content: flex-end; padding-right: 14px; }
+    .pdf-zone.hidden-btn { cursor: default; pointer-events: none; }
+
+    /* Arrow pill — visible on any background */
+    .pdf-zone-icon {
+      display: flex; align-items: center; justify-content: center;
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.18);
+      backdrop-filter: blur(4px);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.2);
+      transition: background 0.15s;
+    }
+    .pdf-zone:hover .pdf-zone-icon { background: rgba(0,0,0,0.38); }
+
+    /* Loading overlay */
+    .pdf-loading {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 12px; background: #f3f3f3; color: #bbb;
+      font-size: 12px; font-weight: 500;
+      transition: opacity 0.4s; z-index: 3;
+    }
+    html.dark .pdf-loading { background: #1a1a1a; }
+    .pdf-loading.hidden { opacity: 0; pointer-events: none; }
+
+    .spinner {
+      width: 22px; height: 22px;
+      border: 2px solid #e0e0e0;
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Controls bar */
+    .pdf-controls {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 16px;
+      border-top: 1px solid var(--border);
+      background: var(--bg); flex-shrink: 0;
+      transition: background 0.3s, border-color 0.3s;
+    }
+    .pdf-page-info { font-size: 11px; font-weight: 600; color: var(--mid); letter-spacing: 0.04em; }
+
+    /* Footer row */
+    .pdf-footer-row { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; }
+    .pdf-hint { font-size: 11px; font-weight: 500; color: #bbb; letter-spacing: 0.02em; }
+    .portfolio-dl-link .s-char { font-size: 13px; font-weight: 500; color: var(--accent); letter-spacing: -0.1px; opacity: 0.8; }
+
+    /* ── SCROLL HINT — clickable ── */
+    .scroll-hint {
+      position: absolute; bottom: 36px; left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      color: #ccc; font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+      animation: fadeInHint 1s 1.2s ease both; opacity: 0;
+      cursor: pointer; text-decoration: none;
+      transition: color 0.2s;
+    }
+    .scroll-hint:hover { color: var(--accent); }
+    .scroll-hint .chev { animation: bounce 1.6s ease infinite; }
+    @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(5px)} }
+    @keyframes fadeInHint {
+      from { opacity:0; transform:translateX(-50%) translateY(6px); }
+      to   { opacity:1; transform:translateX(-50%) translateY(0); }
+    }
+
+    /* ── DIVIDER ── */
+    .divider { border: none; border-top: 1px solid var(--border); margin: 0 72px; }
+
+    /* ── CAROUSEL ── */
+    .carousel-section { padding: 60px 72px 48px; }
+    .carousel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; }
+    .carousel-heading { font-size: 22px; font-weight: 700; letter-spacing: -0.7px; color: var(--black); }
+    .carousel-nav { display: flex; gap: 8px; }
+    .carousel-btn {
+      width: 32px; height: 32px; border-radius: 7px;
+      border: 1px solid var(--border); background: var(--bg);
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: border-color 0.15s, color 0.15s, box-shadow 0.15s, background 0.3s;
+      color: var(--mid);
+    }
+    .carousel-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); box-shadow: 2px 2px 0 0 var(--accent); }
+    .carousel-btn:disabled { opacity: 0.2; cursor: default; }
+
+    .embla { overflow: hidden; margin: 0 -72px; padding: 0 72px 4px; }
+    .embla__container { display: flex; gap: 16px; }
+    .embla__slide { flex: 0 0 300px; min-width: 0; opacity: 0; transform: translateY(14px); transition: opacity 0.4s ease, transform 0.4s ease; }
+    .embla__slide.in { opacity: 1; transform: translateY(0); }
+
+    .card {
+      border: 1px solid var(--border); border-radius: 12px;
+      overflow: hidden; height: 100%; display: flex; flex-direction: column;
+      background: var(--bg);
+      transition: box-shadow 0.2s, transform 0.2s, background 0.3s, border-color 0.3s;
+    }
+    .card:hover { box-shadow: 4px 4px 0 0 var(--shadow); transform: translate(-2px, -2px); }
+    .card-img { width: 100%; aspect-ratio: 3/2; overflow: hidden; background: #f3f3f3; }
+    html.dark .card-img { background: #222; }
+    .card-img-inner { width: 100%; height: 100%; background-size: cover; background-position: center; transition: transform 0.4s ease; }
+    .card:hover .card-img-inner { transform: scale(1.04); }
+    .card-body { padding: 16px; flex: 1; display: flex; flex-direction: column; }
+    .card-tags { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 8px; }
+    .card-title { font-size: 13px; font-weight: 600; color: var(--black); line-height: 1.3; margin-bottom: 6px; }
+    .card-desc { font-size: 12px; font-weight: 400; color: var(--mid); line-height: 1.6; margin-bottom: 14px; flex: 1; }
+    .card-actions { display: flex; gap: 6px; margin-top: auto; }
+    .card-btn {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 11px; font-weight: 600; padding: 6px 12px; border-radius: 6px;
+      text-decoration: none; border: 1px solid var(--border);
+      color: var(--black); background: var(--bg);
+      transition: border-color 0.15s, color 0.15s, box-shadow 0.15s, background 0.3s;
+      white-space: nowrap;
+    }
+    .card-btn:hover { border-color: var(--accent); color: var(--accent); box-shadow: 2px 2px 0 0 var(--accent); }
+    .card-btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .card-btn.primary:hover { box-shadow: 3px 3px 0 0 var(--shadow); }
+
+    /* ── COLLAPSIBLE FILES ── */
+    .files-toggle-wrap { margin: 0 72px; border-top: 1px solid var(--border); }
+    .files-toggle-btn {
+      width: 100%; display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 0; background: none; border: none; cursor: pointer;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .files-toggle-label { font-size: 22px; font-weight: 700; letter-spacing: -0.7px; color: var(--black); transition: opacity 0.2s; }
+    .files-toggle-btn:hover .files-toggle-label { opacity: 0.6; }
+    .files-toggle-icon { display: flex; align-items: center; gap: 8px; color: var(--mid); font-size: 12px; font-weight: 500; }
+    .files-toggle-icon svg { transition: transform 0.3s ease; }
+    .files-toggle-btn.open .files-toggle-icon { color: var(--accent); }
+    .files-toggle-btn.open .files-toggle-icon svg { transform: rotate(180deg); }
+    .toggle-hint-text { font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
+
+    .files-body { max-height: 0; overflow: hidden; transition: max-height 0.5s cubic-bezier(0.4,0,0.2,1); }
+    .files-body.open { max-height: 9999px; }
+    .files-inner { padding-bottom: 60px; }
+
+    .file-group { margin-bottom: 32px; }
+    .file-group:last-child { margin-bottom: 0; }
+    .group-label { font-size: 14px; font-weight: 600; letter-spacing: -0.3px; color: var(--black); margin-bottom: 4px; opacity: 0.4; }
+
+    .file-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 11px 0; gap: 16px;
+      border-bottom: 1px solid var(--border);
+      transition: opacity 0.15s;
+    }
+    .file-row:hover { opacity: 0.6; }
+    .file-info { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
+    .file-icon { color: #ccc; flex-shrink: 0; }
+    .file-name { font-size: 13px; font-weight: 500; color: var(--black); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .tags { display: flex; gap: 5px; flex-shrink: 0; }
+    .tag { font-size: 10px; font-weight: 600; letter-spacing: 0.03em; padding: 3px 7px; border-radius: 4px; white-space: nowrap; background: #f2f2f2; color: #888; }
+    html.dark .tag { background: #222; color: #555; }
+
+    .file-actions { display: flex; gap: 6px; flex-shrink: 0; }
+    .file-btn {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 11px; font-weight: 600; padding: 6px 12px; border-radius: 6px;
+      text-decoration: none; border: 1px solid var(--border);
+      color: var(--black); background: var(--bg);
+      transition: border-color 0.15s, color 0.15s, box-shadow 0.15s, background 0.3s;
+      white-space: nowrap;
+    }
+    .file-btn:hover { border-color: var(--accent); color: var(--accent); box-shadow: 2px 2px 0 0 var(--accent); }
+    .file-btn.dl { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .file-btn.dl:hover { box-shadow: 3px 3px 0 0 var(--shadow); }
+
+    /* ── CONTACT ── */
+    .contact-section { padding: 64px 72px 100px; border-top: 1px solid var(--border); }
+    .contact-section h2 { font-size: 24px; font-weight: 700; letter-spacing: -0.8px; margin-bottom: 24px; }
+    .contact-links { display: flex; gap: 24px; align-items: center; }
+
+    .loading { padding: 48px 72px; font-size: 12px; font-weight: 500; color: #ccc; }
+
+    @media (max-width: 860px) {
+      .hero { grid-template-columns: 1fr; min-height: unset; padding: 40px 28px; gap: 36px; }
+      .pdf-viewer { aspect-ratio: auto; height: 300px; }
+      .divider, .files-toggle-wrap { margin: 0 28px; }
+      .carousel-section, .contact-section { padding-left: 28px; padding-right: 28px; }
+      .embla { margin: 0 -28px; padding: 0 28px 4px; }
+      .embla__slide { flex: 0 0 260px; }
+      .tags { display: none; }
+    }
+  </style>
 </head>
-
 <body>
-  <div class="container">
-    <h1>Ruaridh Murdoch</h1>
-    <p class="subtitle">MEng Design Engineering Imperial College London '28</p>
-    <p class="subtitle">This site is currently being redesigned and will be back online soon.</p>
 
-    <div class="links">
-      <a href="https://ruaridhm16.itch.io/" class="link-box" target="_blank" rel="noopener">
-        <img src="itchio.png" alt="itch.io icon" class="icon" />
-        <span>itch.io</span>
-      </a>
-      <a href="https://www.linkedin.com/in/ruaridh-murdoch-399ba4260/" class="link-box" target="_blank" rel="noopener">
-        <img src="linked.png" alt="LinkedIn icon" class="icon" />
-        <span>LinkedIn</span>
-      </a>
+  <!-- ── HERO ── -->
+  <div class="hero">
+    <div class="hero-left">
+      <div class="logo" id="logoBtn"></div>
+      <h1>Ruaridh<br>Murdoch</h1>
+      <p class="desc">
+        Design Engineering student at Imperial, second year. I work across mechanical design, electronics, and software, usually all at once. This site is a collection of nearly everything I've made and worked on so far.
+      </p>
+      <a href="Ruaridh_Murdoch_CV.pdf" download class="scatter-link cv-link" data-scatter>Download CV</a>
+    </div>
+
+    <!-- ── PDF PANEL ── -->
+    <div class="pdf-panel" id="pdfPanel">
+      <div class="pdf-viewer" id="pdfViewer">
+        <div class="pdf-canvas-wrap" id="pdfCanvasWrap">
+          <canvas id="pdfCanvas"></canvas>
+          <canvas id="pdfCanvasNext"></canvas>
+          <div class="pdf-zone prev" id="pdfZonePrev">
+            <div class="pdf-zone-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+            </div>
+          </div>
+          <div class="pdf-zone next" id="pdfZoneNext">
+            <div class="pdf-zone-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="pdf-loading" id="pdfLoading">
+          <div class="spinner"></div>
+          <span>Give it a sec…</span>
+        </div>
+        <div class="pdf-controls" id="pdfControls" style="display:none;">
+          <span class="pdf-page-info" id="pdfPageInfo">1 / 1</span>
+        </div>
+      </div>
+      <div class="pdf-footer-row">
+        <span class="pdf-hint">Click left or right to turn pages</span>
+        <a href="Ruaridh_Murdoch_Portfolio.pdf" download class="scatter-link portfolio-dl-link" data-scatter>Download Portfolio</a>
+      </div>
+    </div>
+
+    <!-- Scroll hint — clicking scrolls to projects -->
+    <a class="scroll-hint" id="scrollHint" href="#projects">
+      <span>Scroll</span>
+      <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </a>
+  </div>
+
+  <hr class="divider" />
+
+  <!-- ── CAROUSEL ── -->
+  <div class="carousel-section" id="projects">
+    <div class="carousel-header">
+      <div class="carousel-heading">My favourite projects</div>
+      <div class="carousel-nav">
+        <button class="carousel-btn" id="prevBtn" disabled>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <button class="carousel-btn" id="nextBtn">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="embla" id="embla">
+      <div class="embla__container" id="carouselContainer">
+        <div class="loading">Give it a few more secs…</div>
+      </div>
     </div>
   </div>
 
-  <!-- Bouncing Ball Section -->
-  <div class="ball-container">
-    <canvas id="ballCanvas"></canvas>
+  <!-- ── ALL FILES ── -->
+  <div class="files-toggle-wrap">
+    <button class="files-toggle-btn" id="filesToggle">
+      <span class="files-toggle-label">All files</span>
+      <span class="files-toggle-icon">
+        <span class="toggle-hint-text">Show</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+      </span>
+    </button>
+    <div class="files-body" id="filesBody">
+      <div class="files-inner" id="filesInner"></div>
+    </div>
   </div>
 
-  <footer>
-    <p>...</p>
-  </footer>
+  <!-- ── CONTACT ── -->
+  <div class="contact-section">
+    <h2>Get in touch.</h2>
+    <div class="contact-links">
+      <a href="mailto:ruaridhm16@gmail.com" class="scatter-link contact-scatter" data-scatter>ruaridhm16@gmail.com</a>
+      <a href="https://linkedin.com/in/ruaridh-murdoch" target="_blank" class="scatter-link contact-scatter" data-scatter>LinkedIn</a>
+    </div>
+  </div>
 
-  <script src="bouncy.js"></script>
+  <script>
+    const PDF_FILE = 'Display_Portfolio.pdf';
+
+    // ── PDF.JS ──
+    pdfjsLib.GlobalWorkerOptions.workerSrc =
+      'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+    let pdfDoc      = null;
+    let currentPage = 1;
+    let totalPages  = 0;
+    let rendering   = false;
+    const pageCache = {};
+
+    const canvasFront = document.getElementById('pdfCanvas');
+    const canvasBack  = document.getElementById('pdfCanvasNext');
+    const ctxFront    = canvasFront.getContext('2d');
+    const ctxBack     = canvasBack.getContext('2d');
+    const loadingEl   = document.getElementById('pdfLoading');
+    const controls    = document.getElementById('pdfControls');
+    const pageInfo    = document.getElementById('pdfPageInfo');
+    const zonePrev    = document.getElementById('pdfZonePrev');
+    const zoneNext    = document.getElementById('pdfZoneNext');
+
+    function renderToOffscreen(pageNum) {
+      if (pageCache[pageNum]) return Promise.resolve(pageCache[pageNum]);
+      return pdfDoc.getPage(pageNum).then(page => {
+        const viewer = document.getElementById('pdfViewer');
+        // Clamp DPR to 2 max — no need to render at 3× or 4× on very high-DPI screens
+        const dpr    = Math.min(window.devicePixelRatio || 1, 2);
+        const scale  = (viewer.clientWidth / page.getViewport({ scale: 1 }).width) * dpr;
+        const vp     = page.getViewport({ scale });
+        const off    = document.createElement('canvas');
+        off.width    = vp.width;
+        off.height   = vp.height;
+        return page.render({ canvasContext: off.getContext('2d'), viewport: vp }).promise.then(() => {
+          pageCache[pageNum] = off;
+          return off;
+        });
+      });
+    }
+
+    function paintToCanvas(target, ctx, off) {
+      target.width  = off.width;
+      target.height = off.height;
+      ctx.drawImage(off, 0, 0);
+    }
+
+    function showPage(num) {
+      if (rendering) return;
+      rendering = true;
+
+      // If already cached, skip the loading flash entirely
+      const alreadyCached = !!pageCache[num];
+
+      renderToOffscreen(num).then(off => {
+        paintToCanvas(canvasBack, ctxBack, off);
+        canvasBack.classList.add('show');
+        canvasFront.classList.add('hide');
+
+        // Faster swap if cached (no render lag)
+        const delay = alreadyCached ? 80 : 220;
+        setTimeout(() => {
+          paintToCanvas(canvasFront, ctxFront, off);
+          canvasFront.classList.remove('hide');
+          canvasBack.classList.remove('show');
+          rendering = false;
+
+          loadingEl.classList.add('hidden');
+          controls.style.display = 'flex';
+          pageInfo.textContent = `${num} / ${totalPages}`;
+          zonePrev.classList.toggle('hidden-btn', num <= 1);
+          zoneNext.classList.toggle('hidden-btn', num >= totalPages);
+
+          // Pre-render neighbours silently
+          if (num + 1 <= totalPages) renderToOffscreen(num + 1);
+          if (num - 1 >= 1)          renderToOffscreen(num - 1);
+        }, delay);
+      });
+    }
+
+    function goNext() { if (currentPage < totalPages && !rendering) { currentPage++; showPage(currentPage); } }
+    function goPrev() { if (currentPage > 1 && !rendering)          { currentPage--; showPage(currentPage); } }
+
+    function initPDF() {
+      pdfjsLib.getDocument({
+        url: PDF_FILE,
+        disableRange: false,
+        disableStream: false,
+        // Pre-fetch the first 32KB so page 1 starts immediately
+        rangeChunkSize: 32768,
+      }).promise.then(pdf => {
+        pdfDoc     = pdf;
+        totalPages = pdf.numPages;
+        showPage(1);
+      }).catch(() => {
+        loadingEl.querySelector('span').textContent = 'Could not load portfolio PDF.';
+      });
+    }
+
+    zonePrev.addEventListener('click', goPrev);
+    zoneNext.addEventListener('click', goNext);
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goNext();
+      if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   goPrev();
+    });
+
+    // ── HELPERS ──
+    function tagsHtml(tags) {
+      return (tags || []).map(t => `<span class="tag ${t.style}">${t.label}</span>`).join('');
+    }
+    const FILE_ICON = `<svg class="file-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`;
+    const WEB_ICON  = `<svg class="file-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10z"/></svg>`;
+
+    // ── RENDER CAROUSEL ──
+    function renderCarousel(projects) {
+      const container = document.getElementById('carouselContainer');
+      container.innerHTML = '';
+      const featured = projects.filter(p => p.featured);
+      if (!featured.length) { container.innerHTML = '<div class="loading">No featured projects yet.</div>'; return; }
+      featured.forEach(p => {
+        const imgStyle = p.image ? `background-image:url('${p.image}')` : '';
+        const actions  = p.website
+          ? `<a href="${p.website}" target="_blank" class="card-btn primary">Visit</a>`
+          : `<a href="${p.file}" target="_blank" class="card-btn">Preview</a>
+             <a href="${p.file}" download class="card-btn primary">Download</a>`;
+        container.insertAdjacentHTML('beforeend', `
+          <div class="embla__slide">
+            <div class="card">
+              <div class="card-img"><div class="card-img-inner" style="${imgStyle}"></div></div>
+              <div class="card-body">
+                <div class="card-tags">${tagsHtml(p.tags)}</div>
+                <div class="card-title">${p.title}</div>
+                <div class="card-desc">${p.desc}</div>
+                <div class="card-actions">${actions}</div>
+              </div>
+            </div>
+          </div>`);
+      });
+    }
+
+    // ── RENDER ALL FILES ──
+    function renderFiles(projects) {
+      const container = document.getElementById('filesInner');
+      container.innerHTML = '';
+      const groups = {};
+      projects.forEach(p => { if (!groups[p.group]) groups[p.group] = []; groups[p.group].push(p); });
+      Object.entries(groups).forEach(([groupName, items]) => {
+        const rows = items.map(p => {
+          const icon    = p.website ? WEB_ICON : FILE_ICON;
+          const actions = p.website
+            ? `<a href="${p.website}" target="_blank" class="file-btn dl">Visit</a>`
+            : `<a href="${p.file}" target="_blank" class="file-btn">Preview</a>
+               <a href="${p.file}" download class="file-btn dl">Download</a>`;
+          return `<div class="file-row">
+            <div class="file-info">${icon}<span class="file-name">${p.title}</span></div>
+            <div class="tags">${tagsHtml(p.tags)}</div>
+            <div class="file-actions">${actions}</div>
+          </div>`;
+        }).join('');
+        container.insertAdjacentHTML('beforeend', `
+          <div class="file-group"><div class="group-label">${groupName}</div>${rows}</div>`);
+      });
+    }
+
+    // ── SCATTER ──
+    const SCATTER = [
+      {x:-6,y:22,r:4},{x:-10,y:10,r:2},{x:-6,y:12,r:-3},{x:0,y:2,r:-3},{x:0,y:-6,r:2},
+      {x:0,y:6,r:-1},{x:0,y:-11,r:-2},{x:0,y:4,r:4},{x:4,y:-8,r:3},{x:6,y:10,r:-2},
+      {x:-3,y:-4,r:3},{x:3,y:7,r:-2},{x:-4,y:3,r:1},{x:2,y:-3,r:-2},{x:-2,y:5,r:2},
+      {x:4,y:-2,r:-1},{x:-3,y:2,r:2},{x:1,y:-4,r:-1},{x:-2,y:4,r:2},{x:3,y:-2,r:-1}
+    ];
+    function initScatter(el) {
+      const text = el.textContent.trim(); el.textContent = '';
+      const outers = [], inners = [];
+      text.split('').forEach(char => {
+        const outer = document.createElement('span'); outer.className = 's-outer';
+        const inner = document.createElement('span'); inner.className = 's-inner';
+        const ch    = document.createElement('span'); ch.className = 's-char';
+        ch.textContent = char === ' ' ? '\u00A0' : char;
+        inner.appendChild(ch); outer.appendChild(inner); el.appendChild(outer);
+        outers.push(outer); inners.push(inner);
+      });
+      let floats = [];
+      el.addEventListener('mouseenter', () => {
+        outers.forEach((outer, i) => {
+          const s = SCATTER[i % SCATTER.length];
+          gsap.to(outer, { xPercent:s.x, yPercent:s.y, rotation:s.r, duration:0.22, ease:'power3.inOut' });
+          floats.push(gsap.to(inners[i], {
+            keyframes:[{yPercent:0,duration:0},{yPercent:-2,duration:2.5,ease:'power3.inOut'},{yPercent:0,duration:2.5,ease:'power3.inOut'}],
+            repeat:-1, delay:Math.random()*0.3
+          }));
+        });
+      });
+      el.addEventListener('mouseleave', () => {
+        floats.forEach(t => t.kill()); floats = [];
+        outers.forEach((outer, i) => {
+          gsap.to(outer, { xPercent:0, yPercent:0, rotation:0, duration:0.3, ease:'power3.inOut' });
+          gsap.to(inners[i], { yPercent:0, duration:0.3, ease:'power3.inOut' });
+        });
+      });
+    }
+
+    // ── EMBLA ──
+    function initCarousel() {
+      const node  = document.getElementById('embla');
+      const embla = EmblaCarousel(node, { loop:false, align:'start', dragFree:true });
+      const prev  = document.getElementById('prevBtn');
+      const next  = document.getElementById('nextBtn');
+      const sync  = () => { prev.disabled = !embla.canScrollPrev(); next.disabled = !embla.canScrollNext(); };
+      embla.on('select', sync); embla.on('init', sync);
+      prev.addEventListener('click', () => embla.scrollPrev());
+      next.addEventListener('click', () => embla.scrollNext());
+      const slides = node.querySelectorAll('.embla__slide');
+      const obs = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            const idx = Array.from(slides).indexOf(e.target);
+            setTimeout(() => e.target.classList.add('in'), idx * 70);
+            obs.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.1 });
+      slides.forEach(s => obs.observe(s));
+    }
+
+    // ── FILES TOGGLE ──
+    function initToggle() {
+      const btn  = document.getElementById('filesToggle');
+      const body = document.getElementById('filesBody');
+      const hint = btn.querySelector('.toggle-hint-text');
+      btn.addEventListener('click', () => {
+        const open = body.classList.toggle('open');
+        btn.classList.toggle('open', open);
+        if (hint) hint.textContent = open ? 'Hide' : 'Show';
+      });
+    }
+
+    // ── DARK MODE ──
+    function initDarkMode() {
+      document.getElementById('logoBtn').addEventListener('click', () => {
+        document.documentElement.classList.toggle('dark');
+      });
+    }
+
+    // ── LOAD PROJECTS ──
+    async function loadProjects() {
+      try {
+        const res = await fetch('projects.json');
+        if (!res.ok) throw new Error();
+        const projects = await res.json();
+        renderCarousel(projects);
+        renderFiles(projects);
+        if (window.EmblaCarousel) initCarousel();
+      } catch (err) {
+        document.getElementById('carouselContainer').innerHTML =
+          `<div class="loading">Could not load projects.json — run python3 -m http.server from your folder.</div>`;
+        console.error(err);
+      }
+    }
+
+    // ── INIT ──
+    window.addEventListener('load', () => {
+      document.querySelectorAll('[data-scatter]').forEach(initScatter);
+      initToggle();
+      initDarkMode();
+      loadProjects();
+      initPDF();
+    });
+  </script>
 </body>
-
 </html>
