@@ -3,6 +3,8 @@
   "title": "Swivelcut",
   "desc": "A modular cardboard cutting tool for Design & Technology students, developed from our previous research through to a resolved final design.",
   "group": "Year 2",
+  "article": "swivelcut",
+  "badge": "Just updated",
   "tags": [
     { "label": "Product Design Engineering", "style": "tag-y2" },
     { "label": "Group", "style": "tag-group" }
@@ -27,7 +29,7 @@
     { "label": "Product Design Engineering", "style": "tag-y2" },
     { "label": "Group", "style": "tag-group" }
   ],
-  "featured": true,
+  "featured": false,
   "image": "projects/Project_Image_PDE.png",
   "file": "projects/Project_Swivelcut_Research.pdf",
   "website": "",

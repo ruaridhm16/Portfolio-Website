@@ -128,14 +128,18 @@ function tagsHtml(tags) {
   return (tags || []).map(t => `<span class="tag ${t.style}">${t.label}</span>`).join('');
 }
 
-function collabByline(p) {
+function collabLinksHTML(p) {
   const collabs = p.collaborators;
   if (!collabs || !collabs.length) return '';
   const links = collabs.map(c => `<a href="${c.linkedin}" target="_blank" rel="noopener">${c.name}</a>`);
-  const joined = links.length === 1
+  return links.length === 1
     ? links[0]
     : links.slice(0, -1).join(', ') + ' &amp; ' + links[links.length - 1];
-  return `<p class="collab-byline">with ${joined}</p>`;
+}
+
+function collabByline(p) {
+  const links = collabLinksHTML(p);
+  return links ? `<p class="collab-byline">with ${links}</p>` : '';
 }
 const FILE_ICON = `<svg class="file-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3h8l4 4v10a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z"/><path d="M8 3v4a2 2 0 0 0 2 2h4"/><path d="M4 8v11a2 2 0 0 0 2 2h9"/></svg>`;
 const WEB_ICON  = `<svg class="file-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10z"/></svg>`;
@@ -298,15 +302,7 @@ document.addEventListener('click', e => {
   }
 });
 
-const imageOverlay = document.getElementById('imageOverlay');
-const imageOverlayImg = document.getElementById('imageOverlayImg');
-const imageOverlayClose = document.getElementById('imageOverlayClose');
-const imageOverlayTitle = document.getElementById('imageOverlayTitle');
-const imageOverlayDesc = document.getElementById('imageOverlayDesc');
-const imageOverlayActions = document.getElementById('imageOverlayActions');
-const imageOverlayCollab = document.getElementById('imageOverlayCollab');
 const projectOverlayPanel = document.querySelector('.project-overlay-panel');
-const imageOverlayFrame = document.querySelector('.image-overlay-frame');
 
 const FOCUSABLE_SELECTOR = 'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
@@ -327,13 +323,130 @@ function getDeepActiveElement() {
 
 let lastFocusedTrigger = null;
 
+const sheetOverlay = document.getElementById('sheetOverlay');
+const sheetPanel = document.getElementById('sheetPanel');
+const sheetBody = document.getElementById('sheetBody');
+const sheetClose = document.getElementById('sheetClose');
+const sheetScrollbar = document.getElementById('sheetScrollbar');
+const sheetScrollbarThumb = document.getElementById('sheetScrollbarThumb');
+
+let sheetLastTrigger = null;
+const sheetContentCache = new Map();
+
+function syncSheetScrollbar() {
+  const max = sheetBody.scrollHeight - sheetBody.clientHeight;
+  if (max <= 0) {
+    sheetScrollbar.classList.add('hidden');
+    return;
+  }
+  sheetScrollbar.classList.remove('hidden');
+  const thumbRatio = sheetBody.clientHeight / sheetBody.scrollHeight;
+  const thumbHeight = Math.max(thumbRatio * sheetScrollbar.clientHeight, 36);
+  const thumbTravel = sheetScrollbar.clientHeight - thumbHeight;
+  sheetScrollbarThumb.style.height = thumbHeight + 'px';
+  sheetScrollbarThumb.style.top = ((sheetBody.scrollTop / max) * thumbTravel) + 'px';
+}
+
+sheetBody.addEventListener('scroll', syncSheetScrollbar, { passive: true });
+sheetBody.addEventListener('click', e => {
+  const link = e.target.closest('[data-scroll-to]');
+  const target = link && sheetBody.querySelector('#' + link.dataset.scrollTo);
+  if (!target) return;
+  e.preventDefault();
+  target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
+window.addEventListener('resize', () => { if (sheetOverlay.classList.contains('open')) syncSheetScrollbar(); });
+
+let sheetScrollbarDragging = false, sheetDragStartY = 0, sheetDragStartTop = 0;
+sheetScrollbarThumb.addEventListener('pointerdown', e => {
+  sheetScrollbarDragging = true;
+  sheetDragStartY = e.clientY;
+  sheetDragStartTop = sheetBody.scrollTop;
+  sheetScrollbarThumb.classList.add('dragging');
+  sheetScrollbarThumb.setPointerCapture(e.pointerId);
+});
+sheetScrollbarThumb.addEventListener('pointermove', e => {
+  if (!sheetScrollbarDragging) return;
+  const thumbTravel = sheetScrollbar.clientHeight - sheetScrollbarThumb.offsetHeight;
+  if (thumbTravel <= 0) return;
+  const dy = e.clientY - sheetDragStartY;
+  const max = sheetBody.scrollHeight - sheetBody.clientHeight;
+  sheetBody.scrollTop = sheetDragStartTop + dy * (max / thumbTravel);
+});
+const stopSheetDrag = () => { sheetScrollbarDragging = false; sheetScrollbarThumb.classList.remove('dragging'); };
+sheetScrollbarThumb.addEventListener('pointerup', stopSheetDrag);
+sheetScrollbarThumb.addEventListener('pointercancel', stopSheetDrag);
+
+sheetScrollbar.addEventListener('pointerdown', e => {
+  if (e.target === sheetScrollbarThumb) return;
+  const rect = sheetScrollbar.getBoundingClientRect();
+  const ratio = (e.clientY - rect.top) / rect.height;
+  const max = sheetBody.scrollHeight - sheetBody.clientHeight;
+  sheetBody.scrollTop = ratio * max;
+});
+
+async function fetchSheetContent(url) {
+  if (sheetContentCache.has(url)) return sheetContentCache.get(url);
+  const pageHtml = await fetch(url, { cache: 'reload' }).then(r => r.text());
+  const doc = new DOMParser().parseFromString(pageHtml, 'text/html');
+  const content = doc.getElementById('caseContent');
+  const innerHtml = content ? content.innerHTML : '';
+  sheetContentCache.set(url, innerHtml);
+  return innerHtml;
+}
+
+async function openSheet(url) {
+  sheetLastTrigger = document.activeElement;
+  sheetOverlay.classList.add('open');
+  sheetOverlay.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+  setBackgroundInert(true);
+  sheetPanel.focus();
+
+  try {
+    sheetBody.innerHTML = await fetchSheetContent(url);
+    sheetBody.querySelectorAll('.scroll-reveal').forEach(el => el.classList.add('revealed'));
+    const mainEl = sheetBody.querySelector('#caseMain');
+    const accent = mainEl && getComputedStyle(mainEl).getPropertyValue('--case-accent').trim();
+    if (accent) sheetPanel.style.setProperty('--accent', accent);
+    sheetBody.scrollTop = 0;
+    syncSheetScrollbar();
+    initGallery(sheetBody);
+    initFlipbooks(sheetBody);
+  } catch (err) {
+    console.error(err);
+    closeSheet();
+    window.location.href = url;
+  }
+}
+
+function closeSheet() {
+  sheetOverlay.classList.remove('open');
+  sheetOverlay.setAttribute('aria-hidden', 'true');
+  document.body.style.overflow = '';
+  setBackgroundInert(false);
+  if (sheetLastTrigger) { sheetLastTrigger.focus(); sheetLastTrigger = null; }
+}
+
+sheetClose.addEventListener('click', closeSheet);
+sheetOverlay.addEventListener('click', e => {
+  if (e.target === sheetOverlay) closeSheet();
+});
+
+document.addEventListener('click', e => {
+  const link = e.target.closest('a.accent-btn, a.file-btn.accent');
+  if (!link) return;
+  e.preventDefault();
+  openSheet(link.getAttribute('href'));
+});
+
 document.addEventListener('keydown', e => {
   if (e.key !== 'Tab') return;
   let focusable;
   if (projectOverlay.classList.contains('open')) {
     focusable = getFocusable(projectOverlayPanel, projectOverlayShadow);
-  } else if (imageOverlay.classList.contains('open')) {
-    focusable = getFocusable(imageOverlayFrame);
+  } else if (sheetOverlay.classList.contains('open')) {
+    focusable = getFocusable(sheetPanel);
   } else {
     return;
   }
@@ -352,59 +465,10 @@ document.addEventListener('keydown', e => {
 
 document.addEventListener('keydown', e => {
   if (e.key !== 'Escape') return;
+  const openGalleryOverlay = sheetBody.querySelector('.gallery-overlay.open');
+  if (openGalleryOverlay) return;
   if (projectOverlay.classList.contains('open')) closeProjectOverlay();
-  else if (imageOverlay.classList.contains('open')) closeImageOverlay();
-});
-
-function openImageOverlay(src, title, desc, actionsHTML, collabHTML) {
-  imageOverlayImg.src = src || '';
-  imageOverlayImg.alt = title || '';
-  imageOverlayImg.hidden = !src;
-  imageOverlayTitle.textContent = title || '';
-  imageOverlayCollab.innerHTML = collabHTML || '';
-  imageOverlayCollab.hidden = !collabHTML;
-  imageOverlayDesc.textContent = desc || '';
-  imageOverlayDesc.hidden = !desc;
-  imageOverlayActions.innerHTML = actionsHTML || '';
-  imageOverlayActions.hidden = !actionsHTML;
-  lastFocusedTrigger = document.activeElement;
-  imageOverlay.classList.add('open');
-  imageOverlay.setAttribute('aria-hidden', 'false');
-  document.body.style.overflow = 'hidden';
-  setBackgroundInert(true);
-  imageOverlayFrame.focus();
-}
-
-function closeImageOverlay() {
-  imageOverlay.classList.remove('open');
-  imageOverlay.setAttribute('aria-hidden', 'true');
-  document.body.style.overflow = '';
-  setBackgroundInert(false);
-  if (lastFocusedTrigger) {
-    lastFocusedTrigger.focus();
-    lastFocusedTrigger = null;
-  }
-}
-
-document.addEventListener('click', e => {
-  if (e.target.closest('.card-img-badges')) return;
-  const trigger = !isMobileViewport() && e.target.closest('.card-img[data-image]');
-  if (trigger) {
-    openImageOverlay(trigger.dataset.image, trigger.closest('.card')?.getAttribute('aria-label'), trigger.dataset.desc);
-    return;
-  }
-  if (e.target === imageOverlay || e.target === imageOverlayClose || e.target.closest('#imageOverlayClose')) {
-    closeImageOverlay();
-  }
-});
-document.addEventListener('keydown', e => {
-  if (isMobileViewport()) return;
-  if (e.target.closest('.card-img-badges')) return;
-  const trigger = e.target.closest('.card-img[data-image]');
-  if (trigger && (e.key === 'Enter' || e.key === ' ')) {
-    e.preventDefault();
-    openImageOverlay(trigger.dataset.image, trigger.closest('.card')?.getAttribute('aria-label'), trigger.dataset.desc);
-  }
+  else if (sheetOverlay.classList.contains('open')) closeSheet();
 });
 
 function renderCarousel(projects) {
@@ -436,7 +500,11 @@ function renderCarousel(projects) {
       );
     }
 
-    if (p.file) {
+    if (p.article) {
+      buttons.push(
+        `<a href="${p.article}.html" class="card-btn accent-btn">Read</a>`
+      );
+    } else if (p.file) {
       buttons.push(
         `<a href="${p.file}" target="_blank" class="card-btn primary" data-prefetch="${p.file}">Read</a>`
       );
@@ -456,14 +524,16 @@ function renderCarousel(projects) {
     const badges = [];
     if (simulatorLive) badges.push(`<a href="${p.simulator}" target="_blank" class="sim-badge"><span class="sim-badge-face">Try it live</span></a>`);
     if (game && p.website && !isExternal(p.website)) badges.push(`<a href="${p.website}" class="sim-badge"><span class="sim-badge-face">Play now</span></a>`);
+    if (p.badge) badges.push(p.article
+      ? `<a href="${p.article}.html" class="sim-badge accent-btn"><span class="sim-badge-face">${p.badge}</span></a>`
+      : `<span class="sim-badge"><span class="sim-badge-face">${p.badge}</span></span>`);
 
     container.insertAdjacentHTML('beforeend', `
       <div class="embla__slide">
-        <div class="card" aria-label="${p.title}">
-          <div class="card-img"${p.image ? ` data-image="${p.image}" data-desc="${p.desc || ''}" role="button" tabindex="0" aria-label="Expand image"` : ''}>
+        <div class="card" aria-label="${p.title}" data-title="${p.title}" data-desc="${p.desc || ''}" data-image="${p.image || ''}">
+          <div class="card-img">
             ${badges.length ? `<div class="card-img-badges">${badges.join('')}</div>` : ''}
             <div class="card-img-inner"${p.image ? ` data-bg="${p.image}"` : ''}></div>
-            ${p.image ? '<span class="card-img-hint">Expand image</span>' : ''}
           </div>
           <div class="card-body">
             <div class="card-tags">${tagsHtml(p.tags)}</div>
@@ -522,7 +592,11 @@ function renderFiles(projects) {
         );
       }
 
-      if (p.file) {
+      if (p.article) {
+        buttons.push(
+          `<a href="${p.article}.html" class="file-btn accent">Read</a>`
+        );
+      } else if (p.file) {
         buttons.push(
           `<a href="${p.file}" target="_blank" class="file-btn dl" data-prefetch="${p.file}">Read</a>`
         );
@@ -557,16 +631,6 @@ function renderFiles(projects) {
   });
 
   function activateRow(row) {
-    const collabHTML = row.querySelector('.file-collab')?.innerHTML || '';
-    if (isMobileViewport()) {
-      const actionsHTML = row.querySelector('.file-actions')?.innerHTML || '';
-      openImageOverlay(row.dataset.image, row.dataset.title, row.dataset.desc, actionsHTML, collabHTML);
-      return;
-    }
-    if (row.dataset.image) {
-      openImageOverlay(row.dataset.image, row.dataset.title, row.dataset.desc, '', collabHTML);
-      return;
-    }
     const url = row.dataset.website || row.dataset.file;
     if (!url) return;
     if (SIMULATOR_PAGES.has(url)) openProjectOverlay(url);
@@ -1092,7 +1156,7 @@ function initSkillsTicker() {
 
 async function loadProjects() {
   try {
-    const res = await fetch('projects.json');
+    const res = await fetch('projects.json', { cache: 'no-cache' });
     if (!res.ok) throw new Error();
     const projects = await res.json();
     projects.forEach(p => { if (p.simulator && !DISABLED_SIMULATORS.has(p.simulator)) SIMULATOR_PAGES.add(p.simulator); });

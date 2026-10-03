@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <script>
+    (function () {
+      if (localStorage.getItem('t') !== null) {
+        document.documentElement.classList.add('dark');
+      }
+    })();
+  </script>
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-6WZL3FE204"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-6WZL3FE204');
+  </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" href="logo-light.png" media="(prefers-color-scheme: light)" />
+  <link rel="icon" href="logo-dark.png" media="(prefers-color-scheme: dark)" />
+  <title>Swivelcut — Ruaridh Murdoch</title>
+  <meta name="description" content="Swivelcut is a modular cardboard cutting tool for Design & Technology students, engineered from force testing through to a validated final design." />
+
+  <link rel="preload" href="misc/fonts/PlusJakartaSans-Variable.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="styles.css?v=20261005m" />
+</head>
+<body>
+
+  <a class="skip-link" href="#caseMain">Skip to main content</a>
+
+  <button class="case-back-btn" id="backBtn" aria-label="Back to portfolio">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+  </button>
+
+  <header class="case-page-header">
+    <button class="logo" id="logoBtn" type="button" aria-label="Toggle dark mode"></button>
+  </header>
+
+  <div id="caseContent">
+    <div class="case-accent-rule" style="--case-accent:#34936F"></div>
+
+    <main id="caseMain" style="--case-accent:#34936F">
+      <div class="case-header scroll-reveal">
+        <div class="case-heading-row">
+          <p class="case-title">Swivelcut</p>
+        </div>
+
+        <div class="case-hero-row">
+          <div>
+            <p class="case-lede">A compact cardboard-cutting system that makes low-fidelity prototyping safer, more accurate and more accessible in secondary school Design &amp; Technology workshops.</p>
+            <p class="case-lede">It grew out of research across two schools, where students told us cardboard modelling was slow, rough and risky with a craft knife. A fold-away arm with swappable heads: students trace a shape by hand, then the arm cuts it with an enclosed blade, so they don&rsquo;t need any CAD.</p>
+
+            <div class="case-credit-tags">
+              <span>Product Design Engineering</span>
+              <span>6 Month Project</span>
+            </div>
+
+            <div class="case-credit-box">
+              <span class="case-credit-label">Developed with:</span>
+              <div class="case-credit-people">
+                <a href="https://www.linkedin.com/in/maylijones/" target="_blank" rel="noopener"><img src="projects/swivelcut/figma/mayli.webp" alt=""><span>Mayli Jones</span></a>
+                <a href="https://www.linkedin.com/in/rhyswijeratne/" target="_blank" rel="noopener"><img src="projects/swivelcut/figma/rhys.webp" alt=""><span>Rhys Wijeratne</span></a>
+                <a href="https://www.linkedin.com/in/arda-kancal/" target="_blank" rel="noopener"><img src="projects/swivelcut/figma/arda.webp" alt=""><span>Arda Kancal</span></a>
+              </div>
+            </div>
+
+            <div class="case-actions">
+              <div class="case-action-group">
+                <a href="https://github.com/ruaridhm16/SwivelCut-Device" target="_blank" class="card-btn">GitHub</a>
+                <span class="case-action-desc">The Swivelcut device repository on GitHub.</span>
+              </div>
+              <div class="case-action-group">
+                <a href="projects/Project_Swivelcut_Research.pdf" target="_blank" class="card-btn sim-btn" data-prefetch="projects/Project_Swivelcut_Research.pdf">Read Research Report</a>
+                <span class="case-action-desc">Interviews, surveys and benchmarking that shaped the brief.</span>
+              </div>
+              <div class="case-action-group">
+                <a href="projects/Project_Swivelcut.pdf" target="_blank" class="card-btn primary" data-prefetch="projects/Project_Swivelcut.pdf">Read Design Report</a>
+                <span class="case-action-desc">Concepts, testing, branding, engineering and manufacture.</span>
+              </div>
+            </div>
+          </div>
+          <div class="case-hero-image-wrap">
+            <img src="projects/swivelcut/figma/hero.webp?v=20261001a" alt="Swivelcut on the workbench">
+          </div>
+        </div>
+
+        <div class="case-gallery-section">
+          <div class="case-gallery-head">
+            <h3 class="case-gallery-heading">Gallery</h3>
+            <button class="case-gallery-ctl" id="galleryDisplayBtn" type="button" aria-label="Open fullscreen">
+              <span class="case-gallery-ctl-label">Fullscreen</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+            </button>
+          </div>
+          <div class="case-gallery-stage">
+            <button class="case-gallery-arrow case-gallery-arrow-prev" id="galleryInlinePrev" type="button" aria-label="Previous photo">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <div class="case-gallery-track" id="galleryTrack" tabindex="0" aria-label="Photo gallery, drag or use the arrow keys"></div>
+            <button class="case-gallery-arrow case-gallery-arrow-next" id="galleryInlineNext" type="button" aria-label="Next photo">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+          </div>
+          <a href="#myContributions" class="case-jump" data-scroll-to="myContributions" aria-label="Jump to my contributions" title="My contributions"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></a>
+        </div>
+
+        <section class="case-contributions" id="myContributions">
+          <h2 class="case-section-heading">My contributions</h2>
+          <div class="case-contributions-grid">
+            <div class="case-contributor">
+              <h3 class="group-label">Research</h3>
+              <ul>
+                <li>Secondary research</li>
+                <li>Interviews and observations</li>
+                <li>Insights, HMWs and affinity mapping</li>
+                <li>Survey design and analysis</li>
+                <li>Data and meeting notes</li>
+              </ul>
+            </div>
+            <div class="case-contributor">
+              <h3 class="group-label">Product design</h3>
+              <ul>
+                <li>User interaction</li>
+                <li>Design language</li>
+                <li>Final design and control panel</li>
+                <li>Material selection</li>
+              </ul>
+            </div>
+            <div class="case-contributor">
+              <h3 class="group-label">Mechanical design</h3>
+              <ul>
+                <li>Piercing and drag force testing</li>
+                <li>Arm reach and motor selection</li>
+                <li>Gear and belt reductions</li>
+                <li>Shoulder and elbow joints</li>
+                <li>Latching mechanism</li>
+                <li>Tracing head, base and clamping</li>
+                <li>CAD for everything but the cutting head</li>
+                <li>Electronics layout and integration</li>
+              </ul>
+            </div>
+            <div class="case-contributor">
+              <h3 class="group-label">Manufacture and business</h3>
+              <ul>
+                <li>Open mould direction</li>
+                <li>Design for assembly</li>
+                <li>Product costing</li>
+                <li>Production volume</li>
+              </ul>
+            </div>
+            <div class="case-contributor">
+              <h3 class="group-label">Team and delivery</h3>
+              <ul>
+                <li>Whole submission video, filmed and edited</li>
+                <li>At every interview</li>
+                <li>Shared: concept, plan, testing, future work</li>
+                <li>A small share of the report</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <p class="case-disclaimer">Academic project, not affiliated with Bambu Lab in any way.</p>
+
+        <template id="gallerySource">
+          <figure><img src="projects/swivelcut/gallery/01-interview-with-luke-barker.webp" width="1417" height="996" alt=""><figcaption>Interview with Luke Barker, Head of DT at CLSG</figcaption></figure>
+          <figure><img src="projects/swivelcut/gallery/02-initial-concept-sketch.webp" width="1652" height="996" alt=""><figcaption>Initial concept sketch inspired by the greek pantograph</figcaption></figure>
+          <figure><img src="projects/swivelcut/gallery/03-initial-cad-mockup.webp" width="1652" height="996" alt=""><figcaption>Initial CAD mockup with internals</figcaption></figure>
+          <figure><img src="projects/swivelcut/gallery/04-morphological-analysis.webp" width="1114" height="996" alt=""><figcaption>Morphological analysis on each main part</figcaption></figure>
+          <figure><img src="projects/swivelcut/gallery/05-lo-fi-prototyping.webp" width="1671" height="996" alt=""><figcaption>Lo-fi prototyping form in foam</figcaption></figure>
+          <figure><img src="projects/swivelcut/gallery/06-morphological-analysis-outcome.webp" width="1331" height="996" alt=""><figcaption>Morphological analysis outcome in CAD</figcaption></figure>
+          <figure><img src="projects/swivelcut/gallery/07-pierce-testing.webp" width="1757" height="996" alt=""><figcaption>Testing forces while piercing cardboard</figcaption></figure>
+          <figure><img src="projects/swivelcut/gallery/08-drag-testing.webp" width="1374" height="996" alt=""><figcaption>Testing forces with dragging the blade</figcaption></figure>
+          <figure><img src="projects/swivelcut/gallery/09-suspension-system.webp" width="1553" height="996" alt=""><figcaption>Blade suspension system to reduce required force</figcaption></figure>
+          <figure><img src="projects/swivelcut/gallery/10-form-iteration.webp" width="1114" height="996" alt=""><figcaption>Form iteration once motors were identified</figcaption></figure>
+          <figure><img src="projects/swivelcut/gallery/11-inside-the-arm.webp" width="1912" height="996" alt=""><figcaption>The engineering inside the arm</figcaption></figure>
+          <figure><img src="projects/swivelcut/gallery/12-cutting-head-cad-and-real-life.webp" width="1281" height="996" alt=""><figcaption>Cutting head: Initial CAD and real life</figcaption></figure>
+          <figure><img src="projects/swivelcut/gallery/13-circuit-diagram.webp" width="1578" height="996" alt=""><figcaption>Circuit diagram for Swivelcut</figcaption></figure>
+          <figure><img src="projects/swivelcut/gallery/14-design-language.webp" width="1529" height="996" alt=""><figcaption>Design language adapted from BambuLab</figcaption></figure>
+          <figure><img src="projects/swivelcut/gallery/15-design-for-manufacture.webp" width="1529" height="996" alt=""><figcaption>Design for manufacture and assembly</figcaption></figure>
+          <figure><img src="projects/swivelcut/gallery/16-packaging.webp" width="984" height="996" alt=""><figcaption>Packaging design adapted from BambuLab</figcaption></figure>
+          <figure><img src="projects/swivelcut/gallery/17-luke-barker-reading-user-guide.webp" width="984" height="996" alt=""><figcaption>Luke Barker reading the user guide</figcaption></figure>
+          <figure><img src="projects/swivelcut/gallery/18-testing-with-a-level-student.webp" width="1331" height="996" alt=""><figcaption>Testing with an A-level student</figcaption></figure>
+          <figure><img src="projects/swivelcut/gallery/19-testing-with-year-7s.webp" width="1176" height="996" alt=""><figcaption>Testing with Year 7 students</figcaption></figure>
+          <figure><img src="projects/swivelcut/gallery/20-testing-with-ui.webp" width="1176" height="996" alt=""><figcaption>Testing the UI and UX</figcaption></figure>
+          <figure><img src="projects/swivelcut/gallery/21-final-render.webp" width="1522" height="996" alt=""><figcaption>Final render on Blender</figcaption></figure>
+          <figure data-action="guide"><img src="projects/swivelcut/guide/page-01.webp" width="1240" height="1335" alt=""><figcaption>Quick start guide: click to read it</figcaption></figure>
+        </template>
+      </div>
+    </main>
+
+  <div class="gallery-overlay" id="galleryOverlay" aria-hidden="true">
+    <button class="gallery-close" type="button" aria-label="Close gallery">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <button class="gallery-nav gallery-prev" type="button" aria-label="Previous photo">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <button class="gallery-nav gallery-next" type="button" aria-label="Next photo">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+    <div class="gallery-stage">
+      <img src="" alt="">
+    </div>
+    <p class="gallery-caption"></p>
+    <div class="gallery-dots"></div>
+  </div>
+
+  <div class="gallery-overlay guide-overlay" id="guideOverlay" aria-hidden="true">
+    <button class="gallery-close" type="button" aria-label="Close user guide">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div class="flipbook" data-flipbook data-pages="28" data-back-cover="27" data-src="projects/swivelcut/guide/page-{n}.webp"
+         role="region" aria-roledescription="book" aria-label="Swivelcut quick start guide, 28 pages. Use the left and right arrow keys to turn pages.">
+      <div class="flipbook-stage"></div>
+    </div>
+    <div class="flipbook-controls">
+      <button type="button" class="flipbook-btn" data-flip="prev" aria-label="Previous page">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button type="button" class="flipbook-btn" data-flip="next" aria-label="Next page">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </div>
+  </div>
+
+  <footer class="site-footer">
+    <p>&copy; <span id="year"></span> Ruaridh Murdoch. All rights reserved.</p>
+    <div class="footer-links">
+      <a href="https://github.com/ruaridhm16" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://www.linkedin.com/in/ruaridh-murdoch-399ba4260/" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="mailto:ruaridhm16@gmail.com">Email</a>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.js"></script>
+  <script src="flipbook.js?v=20261005m"></script>
+  <script src="gallery.js?v=20261005m"></script>
+  <script src="case-page.js?v=20261005m"></script>
+</body>
+</html>
