@@ -10,7 +10,7 @@
     { "label": "Group", "style": "tag-group" }
   ],
   "featured": true,
-  "image": "projects/Project_Image_Swivelcut.png",
+  "image": "projects/Project_Image_Swivelcut.webp",
   "file": "projects/Project_Swivelcut.pdf",
   "website": "",
   "repo": "https://github.com/ruaridhm16/SwivelCut-Device",
@@ -30,7 +30,7 @@
     { "label": "Group", "style": "tag-group" }
   ],
   "featured": false,
-  "image": "projects/Project_Image_PDE.png",
+  "image": "projects/Project_Image_PDE.webp",
   "file": "projects/Project_Swivelcut_Research.pdf",
   "website": "",
   "collaborators": [
@@ -49,7 +49,7 @@
       { "label": "Individual", "style": "tag-solo" }
     ],
     "featured": true,
-    "image": "projects/Project_Image_Hnefatafl.png",
+    "image": "projects/Project_Image_Hnefatafl.webp",
     "file": "",
     "website": "hnefatafl/",
     "repo": "https://github.com/ruaridhm16/Hnefatafl-Game"
@@ -63,12 +63,80 @@
       { "label": "Group",              "style": "tag-group" }
     ],
     "featured": true,
-    "image": "projects/Project_Image_Gizmo.png",
-    "file": "projects/Project_Gizmo.pdf",
+    "image": "projects/Project_Image_Gizmo.webp",
+    "video": "projects/gizmo/gizmo.mp4",
+  "file": "projects/Project_Gizmo.pdf",
     "website": "",
     "collaborators": [
     { "name": "Coe Ishikawa", "linkedin": "https://www.linkedin.com/in/coe-ishikawa-05124a22b/" }
     ]
+},
+  {
+    "title": "Rhythm Rush Research",
+    "desc": "Researched how concert-goers experience queuing. Ran user interviews and surveys to uncover the social awkwardness and boredom of waiting.",
+    "group": "Year 1",
+    "tags": [
+      { "label": "Human Centred Design",   "style": "tag-y1" },
+      { "label": "Group", "style": "tag-group" }
+    ],
+    "featured": false,
+    "image": "projects/Project_Image_HCD.webp",
+    "file": "projects/Project_HCD.pdf",
+    "website": "",
+    "collaborators": [
+    { "name": "Aidan Ryder", "linkedin": "https://www.linkedin.com/in/aidan-ryder-b848aa266/" },
+    { "name": "Ikem Enebeli", "linkedin": "https://www.linkedin.com/in/ikem-e/" },
+    { "name": "Yousuf Shahabuddin", "linkedin": "https://www.linkedin.com/in/yousuf-shb/" },
+    { "name": "Amarie Fasoro", "linkedin": "https://www.linkedin.com/in/amarie-fasoro-8104a42bb/" }
+    ]
+  },
+  {
+    "title": "Rhythm Rush",
+    "desc": "A motion-tracked dance battle game for concert queues. Up to four players compete via body-tracking on a large screen, scored on creativity and rhythm.",
+    "group": "Year 1",
+    "article": "rhythmrush",
+    "tryLive": true,
+    "tags": [
+      { "label": "Human Centred Design",   "style": "tag-y1" },
+      { "label": "Group", "style": "tag-group" }
+    ],
+    "featured": true,
+    "image": "projects/Project_Image_Rhythm_Rush.webp",
+    "file": "projects/Project_Rhythm_Rush.pdf",
+    "repo": "https://github.com/ruaridhm16/Rhythm-Rush-Concept",
+    "collaborators": [
+    { "name": "Aidan Ryder", "linkedin": "https://www.linkedin.com/in/aidan-ryder-b848aa266/" },
+    { "name": "Ikem Enebeli", "linkedin": "https://www.linkedin.com/in/ikem-e/" },
+    { "name": "Yousuf Shahabuddin", "linkedin": "https://www.linkedin.com/in/yousuf-shb/" },
+    { "name": "Amarie Fasoro", "linkedin": "https://www.linkedin.com/in/amarie-fasoro-8104a42bb/" }
+    ]
+  },
+  {
+  "title": "Balancing Segway",
+  "desc": "A two-wheeled robot that balances itself with a PID controller, built on the PyBench board for an Electronics 2 lab. It started out as a beat-detecting dancer.",
+  "group": "Year 2",
+  "article": "segway",
+  "badge": "New",
+  "tags": [
+    {
+      "label": "Electronics",
+      "style": "tag-y2"
+    },
+    {
+      "label": "Group",
+      "style": "tag-group"
+    }
+  ],
+  "featured": true,
+  "image": "projects/Project_Image_Segway.webp",
+  "file": "",
+  "website": "",
+  "collaborators": [
+    {
+      "name": "Rhys Wijeratne",
+      "linkedin": "https://www.linkedin.com/in/rhyswijeratne/"
+    }
+  ]
 },
   {
   "title": "Prosthetic Running Blade",
@@ -79,7 +147,7 @@
     { "label": "Individual", "style": "tag-solo" }
   ],
   "featured": true,
-  "image": "projects/Project_Image_FEA.png",
+  "image": "projects/Project_Image_FEA.webp",
   "file": "projects/Project_FEA.pdf",
   "website": ""
   },
@@ -123,7 +191,7 @@
       { "label": "Group", "style": "tag-group" }
     ],
     "featured": false,
-    "image": "projects/Project_Image_Group_SDE.png",
+    "image": "projects/Project_Image_Group_SDE.webp",
     "file": "projects/Project_Group_SDE.pdf",
     "website": ""
   },
@@ -136,7 +204,7 @@
       { "label": "Individual", "style": "tag-solo" }
     ],
     "featured": false,
-    "image": "projects/Project_Image_Individual_SDE.png",
+    "image": "projects/Project_Image_Individual_SDE.webp",
     "file": "projects/Project_Individual_SDE.pdf",
     "website": ""
   },
@@ -149,48 +217,9 @@
       { "label": "Individual", "style": "tag-solo" }
     ],
     "featured": false,
-    "image": "projects/Project_Image_Pedal_Ready.png",
+    "image": "projects/Project_Image_Pedal_Ready.webp",
     "file": "projects/Project_DEP.pdf",
     "website": ""
-  },
-  {
-    "title": "Rhythm Rush Research",
-    "desc": "Researched how concert-goers experience queuing. Ran user interviews and surveys to uncover the social awkwardness and boredom of waiting.",
-    "group": "Year 1",
-    "tags": [
-      { "label": "Human Centred Design",   "style": "tag-y1" },
-      { "label": "Group", "style": "tag-group" }
-    ],
-    "featured": false,
-    "image": "projects/Project_Image_HCD.png",
-    "file": "projects/Project_HCD.pdf",
-    "website": "",
-    "collaborators": [
-    { "name": "Aidan Ryder", "linkedin": "https://www.linkedin.com/in/aidan-ryder-b848aa266/" },
-    { "name": "Ikem Enebeli", "linkedin": "https://www.linkedin.com/in/ikem-e/" },
-    { "name": "Yousuf Shahabuddin", "linkedin": "https://www.linkedin.com/in/yousuf-shb/" },
-    { "name": "Amarie Fasoro", "linkedin": "https://www.linkedin.com/in/amarie-fasoro-8104a42bb/" }
-    ]
-  },
-  {
-    "title": "Rhythm Rush",
-    "desc": "A motion-tracked dance battle game for concert queues. Up to four players compete via body-tracking on a large screen, scored on creativity and rhythm.",
-    "group": "Year 1",
-    "tags": [
-      { "label": "Human Centred Design",   "style": "tag-y1" },
-      { "label": "Group", "style": "tag-group" }
-    ],
-    "featured": true,
-    "image": "projects/Project_Image_Rhythm_Rush.png",
-    "file": "projects/Project_Rhythm_Rush.pdf",
-    "simulator": "rhythm-rush/",
-    "repo": "https://github.com/ruaridhm16/Rhythm-Rush-Concept",
-    "collaborators": [
-    { "name": "Aidan Ryder", "linkedin": "https://www.linkedin.com/in/aidan-ryder-b848aa266/" },
-    { "name": "Ikem Enebeli", "linkedin": "https://www.linkedin.com/in/ikem-e/" },
-    { "name": "Yousuf Shahabuddin", "linkedin": "https://www.linkedin.com/in/yousuf-shb/" },
-    { "name": "Amarie Fasoro", "linkedin": "https://www.linkedin.com/in/amarie-fasoro-8104a42bb/" }
-    ]
   },
   {
     "title": "Reverse Engineered Hand Mixer",
@@ -201,7 +230,7 @@
       { "label": "Individual", "style": "tag-solo" }
     ],
     "featured": false,
-    "image": "projects/Project_Image_REVENG.png",
+    "image": "projects/Project_Image_REVENG.webp",
     "file": "projects/Project_REVENG.pdf",
     "website": ""
   },
@@ -214,7 +243,7 @@
       { "label": "Individual", "style": "tag-solo" }
     ],
     "featured": false,
-    "image": "projects/Project_Image_CAD.png",
+    "image": "projects/Project_Image_CAD.webp",
     "file": "projects/Project_CAD.pdf",
     "website": ""
   },
@@ -226,7 +255,7 @@
       { "label": "Portfolio",   "style": "tag-personal" }
     ],
     "featured": false,
-    "image": "projects/Project_Image_Old_Portfolio.png",
+    "image": "projects/Project_Image_Old_Portfolio.webp",
     "file": "projects/Project_Old_Portfolio.pdf",
     "website": ""
   },
@@ -239,7 +268,7 @@
       { "label": "UI", "style": "tag-personal" }
     ],
     "featured": false,
-    "image": "projects/Project_Image_Logo_Design.png",
+    "image": "projects/Project_Image_Logo_Design.webp",
     "file": "projects/Project_Logo_Design.pdf",
     "website": ""
   },

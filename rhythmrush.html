@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <script>
+    (function () {
+      if (localStorage.getItem('t') !== null) {
+        document.documentElement.classList.add('dark');
+      }
+    })();
+  </script>
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-6WZL3FE204"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-6WZL3FE204');
+  </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" href="logo-light.png" media="(prefers-color-scheme: light)" />
+  <link rel="icon" href="logo-dark.png" media="(prefers-color-scheme: dark)" />
+  <title>Rhythm Rush</title>
+  <meta name="description" content="A motion-tracked dance game for concert queues that gets strangers interacting through play instead of small talk." />
+
+  <link rel="preload" href="misc/fonts/PlusJakartaSans-Variable.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="styles.css?v=20261010d" />
+</head>
+<body>
+
+  <a class="skip-link" href="#caseMain">Skip to main content</a>
+
+  <button class="case-back-btn" id="backBtn" aria-label="Back to portfolio" style="--case-accent:#8A2A7B">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+  </button>
+
+  <div id="caseContent">
+
+    <main id="caseMain" class="rr-glow" style="--case-accent:#8A2A7B;--accent:#8A2A7B">
+      <div class="case-header scroll-reveal">
+        <div class="case-heading-row">
+          <p class="case-title">Rhythm Rush</p>
+        </div>
+
+        <div class="case-hero-row">
+          <div>
+            <p class="case-lede rr-lede"><span>A <b>motion-tracked dance game</b> for concert queues that gets strangers interacting through <b>play</b> instead of small talk.</span> Up to four players step onto marked spots and appear as low-poly characters on a big screen, dancing along with an on-screen guide. Everyone else in the queue can watch, join in or carry on past without losing their place.</p>
+
+            <div class="case-actions">
+              <div class="case-action-group">
+                <a href="projects/Project_HCD.pdf" target="_blank" class="card-btn primary" data-prefetch="projects/Project_HCD.pdf">Read Research Report</a>
+                <span class="case-action-desc">Observation, interviews and experiments behind the idea.</span>
+              </div>
+              <div class="case-action-group">
+                <a href="projects/Project_Rhythm_Rush.pdf" target="_blank" class="card-btn sim-btn" data-prefetch="projects/Project_Rhythm_Rush.pdf">Read Design Report</a>
+                <span class="case-action-desc">Concept selection, co-design, testing and the final design.</span>
+              </div>
+            </div>
+
+            <div class="case-credit-tags">
+              <span>Human Centred Design Concept</span>
+              <span>6 Months</span>
+            </div>
+          </div>
+          <div class="case-hero-image-wrap">
+            <img src="projects/rhythmrush/hero.webp?v=20261006h" width="1800" height="819" alt="Render of the Rhythm Rush queue space: a railed walkway leading to a curved screen showing four dancing characters">
+          </div>
+        </div>
+
+        <div class="case-credit-box rr-team">
+          <span class="case-credit-label">Developed with:</span>
+          <div class="case-credit-people">
+            <a href="https://www.linkedin.com/in/aidan-ryder-b848aa266/" target="_blank" rel="noopener"><img src="projects/rhythmrush/figma/aidan.webp?v=20261006a" alt=""><span>Aidan Ryder</span></a>
+            <a href="https://www.linkedin.com/in/ikem-e/" target="_blank" rel="noopener"><img src="projects/rhythmrush/figma/ikem.webp?v=20261006a" alt=""><span>Ikem Enebeli</span></a>
+            <a href="https://www.linkedin.com/in/yousuf-shb/" target="_blank" rel="noopener"><img src="projects/rhythmrush/figma/yousuf.webp?v=20261006a" alt=""><span>Yousuf Shahabuddin</span></a>
+            <a href="https://www.linkedin.com/in/amarie-fasoro-8104a42bb/" target="_blank" rel="noopener"><img src="projects/rhythmrush/figma/amarie.webp?v=20261006a" alt=""><span>Amarie Fasoro</span></a>
+          </div>
+        </div>
+
+        <section class="rr-split-section">
+          <h2 class="case-section-heading">Research</h2>
+          <div class="rr-split">
+            <div class="rr-split-text">
+              <p class="case-lede">We started at <a href="https://www.outernetglobal.com" target="_blank" rel="noopener">Outernet</a>, an immersive space by Tottenham Court Road designed to get the public interacting. Visitors stayed an average of 41 seconds, nearly half were on their phones, and nobody spoke to anyone new. Street interviews with 21 people explained why; most wanted to connect but worried about intruding or looking like "a weirdo".</p>
+              <p class="case-lede">So we tried giving them a reason. Outside Imperial's library, we set up a table where passers-by could high-five us or have a quick chat, then swapped the chat for a two-player game, and interactions doubled. People who wouldn't interrupt a conversation crowded around the game and started talking without being asked.</p>
+              <p class="case-lede">Follow-up interviews and a survey pointed us to concert queues. They're full of bored strangers who already share an interest</p>
+            </div>
+            <figure class="rr-split-figure">
+              <div class="rr-split-media"><img src="projects/rhythmrush/gallery/table-experiment.webp" width="1600" height="1465" alt="Passers-by stopping at our table outside the library" loading="lazy"></div>
+              <figcaption>Our table experiment outside Imperial&rsquo;s library - ran by <a href="https://www.linkedin.com/in/aidan-ryder-b848aa266/" target="_blank" rel="noopener">Aidan</a> and <a href="https://www.linkedin.com/in/ikem-e/" target="_blank" rel="noopener">Ikem</a></figcaption>
+            </figure>
+          </div>
+        </section>
+
+        <section class="case-prose">
+          <h2 class="case-section-heading">Solution</h2>
+          <p class="case-lede">We tested three concepts with users. <a href="https://studiolab.ide.tudelft.nl/studiolab/desmet/premo/" target="_blank" rel="noopener">PrEmo</a> emotion cards captured how each one would feel to come across in a queue, with friends and alone. And a <a href="https://medialabamsterdam.com/toolkit/method-card/harris-profile/" target="_blank" rel="noopener">Harris profile</a> then scored the concepts on criteria like learnability and fit with the pace of a queue. Rhythm Rush scored highest, and its whole premise depends on tracking people's bodies reliably.</p>
+          <p class="case-lede">This is the body tracking we built for Rhythm Rush, which I've rebuilt to run on this site. <a href="https://ai.google.dev/edge/mediapipe/solutions/vision/pose_landmarker" target="_blank" rel="noopener">MediaPipe</a> places landmark points on your limbs and joins them into a skeleton that follows you in real time, which is how the game animated the characters and scored the dancers. I left out the characters and stage art to keep it lightweight, so what you see is just the tracking.</p>
+        </section>
+
+        <div class="case-gallery-section" id="trySim">
+          <div class="rr-sim" data-sim>
+            <div id="stage">
+              <div id="video-clip">
+                <video id="video" autoplay playsinline muted></video>
+                <div id="club-bg" aria-hidden="true"></div>
+                <canvas id="overlay"></canvas>
+              </div>
+              <div id="live-indicator" hidden></div>
+              <button id="btn-stop" type="button" hidden>Stop</button>
+              <button id="btn-hide-camera" type="button" hidden>Hide camera</button>
+              <div id="placeholder">
+                <button id="btn-start" type="button">Start Camera</button>
+                <p id="status" aria-live="polite"></p>
+              </div>
+            </div>
+          </div>
+          <div class="rr-sim-foot">
+            <a href="https://github.com/ruaridhm16/Rhythm-Rush-Concept" target="_blank" rel="noopener" class="card-btn">GitHub</a>
+          </div>
+        </div>
+
+        <div class="case-gallery-section">
+          <div class="case-gallery-head">
+            <h3 class="case-gallery-heading">Gallery</h3>
+            <button class="case-gallery-ctl" id="galleryDisplayBtn" type="button" aria-label="Open fullscreen">
+              <span class="case-gallery-ctl-label">Fullscreen</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+            </button>
+          </div>
+          <div class="case-gallery-stage">
+            <button class="case-gallery-arrow case-gallery-arrow-prev" id="galleryInlinePrev" type="button" aria-label="Previous photo">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <div class="case-gallery-track" id="galleryTrack" tabindex="0" aria-label="Photo gallery, drag or use the arrow keys"></div>
+            <button class="case-gallery-arrow case-gallery-arrow-next" id="galleryInlineNext" type="button" aria-label="Next photo">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <section class="case-contributions" id="myContributions">
+          <h2 class="case-section-heading">My contributions</h2>
+          <div class="case-contributions-grid">
+            <div class="case-contributor">
+              <h3 class="group-label">Research</h3>
+              <ul>
+                <li>Desk research on queues and gamification</li>
+                <li>Outernet observation study</li>
+                <li>Street interviews with 21 people</li>
+                <li>Social experiment outside Imperial&rsquo;s library</li>
+                <li>Insights, HMWs and solution statement</li>
+              </ul>
+            </div>
+            <div class="case-contributor">
+              <h3 class="group-label">Concept selection</h3>
+              <ul>
+                <li>Ideation of the three concepts</li>
+                <li>Harris profile</li>
+                <li>Concept decision</li>
+              </ul>
+            </div>
+            <div class="case-contributor">
+              <h3 class="group-label">Co-design and user testing</h3>
+              <ul>
+                <li>Stakeholder role-play</li>
+                <li>Three low-fi UI concepts, narrowed to one</li>
+                <li>Simulated queue test</li>
+                <li>Full-scale sizing mock-up</li>
+                <li>Junction and spectator zone layout</li>
+              </ul>
+            </div>
+            <div class="case-contributor">
+              <h3 class="group-label">Body tracking</h3>
+              <ul>
+                <li>Python prototype with MediaPipe</li>
+                <li>Limits testing and model complexity</li>
+                <li>Smoothing and split-screen tracking</li>
+                <li>Camera setup and distance</li>
+                <li>Browser version for this site</li>
+              </ul>
+            </div>
+            <div class="case-contributor">
+              <h3 class="group-label">Team and delivery</h3>
+              <ul>
+                <li>Report layout and writing</li>
+                <li>Validation section</li>
+                <li>Appendices</li>
+                <li>Meeting minutes</li>
+                <li>References</li>
+                <li>Presentation</li>
+              </ul>
+            </div>
+          </div>
+          <div class="case-contributor case-note">
+            <h3 class="group-label">Special note</h3>
+            <p><a href="https://www.linkedin.com/in/amarie-fasoro-8104a42bb/" target="_blank" rel="noopener">Amarie Fasoro</a>, a member of our team, made all of the amazing Blender characters, the UI design and all of the game environment art.</p>
+          </div>
+        </section>
+
+        <template id="gallerySource">
+          <figure><img src="projects/rhythmrush/gallery/01-outernet.webp?v=2" width="1600" height="900" alt=""><figcaption>Interviewing at Outernet, by Tottenham Court Road</figcaption></figure>
+          <figure><img src="projects/rhythmrush/gallery/02-table-experiment-2.webp" width="1600" height="954" alt=""><figcaption>High five or a chat: the table experiment at Imperial</figcaption></figure>
+          <figure><img src="projects/rhythmrush/gallery/03-original-concept.webp" width="1210" height="794" alt=""><figcaption>The selected original concept art for Rhythm Rush</figcaption></figure>
+          <figure><img src="projects/rhythmrush/gallery/04-queue-test.webp" width="1600" height="861" alt=""><figcaption>Simulated test of queue flow and interaction at Imperial</figcaption></figure>
+          <figure><img src="projects/rhythmrush/gallery/05-screen-cads.webp" width="989" height="1027" alt=""><figcaption>Screen design mockups in CAD</figcaption></figure>
+          <figure><img src="projects/rhythmrush/gallery/06-screen-size.webp" width="777" height="692" alt=""><figcaption>Scaling the size of the screen</figcaption></figure>
+          <figure><img src="projects/rhythmrush/gallery/07-final-cad.webp" width="1600" height="1134" alt=""><figcaption>Final CAD of the space, screen and queue flow</figcaption></figure>
+          <figure><img src="projects/rhythmrush/gallery/08-technical-testing.webp" width="1363" height="1041" alt=""><figcaption>Testing the body tracking on a projector</figcaption></figure>
+          <figure data-video="projects/rhythmrush/dancing.mp4" data-video-mobile="projects/rhythmrush/dancing-mobile.mp4"><img src="projects/rhythmrush/dancing-poster.webp" width="1800" height="644" alt=""><figcaption>Video of all four game characters dancing with environment, made in Blender</figcaption></figure>
+        </template>
+
+      </div>
+    </main>
+
+  <div class="gallery-overlay" id="galleryOverlay" aria-hidden="true">
+    <button class="gallery-close" type="button" aria-label="Close gallery">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <button class="gallery-nav gallery-prev" type="button" aria-label="Previous photo">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <button class="gallery-nav gallery-next" type="button" aria-label="Next photo">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+    <div class="gallery-stage">
+      <img src="" alt="">
+    </div>
+    <p class="gallery-caption"></p>
+    <div class="gallery-dots"></div>
+  </div>
+  </div>
+
+  <footer class="site-footer">
+    <p>&copy; <span id="year"></span> Ruaridh Murdoch. All rights reserved.</p>
+  </footer>
+
+  <script src="gallery.js?v=20261008b"></script>
+  <script src="glow.js?v=20261007b"></script>
+  <script src="simulator.js?v=20261010a"></script>
+  <script src="case-page.js?v=20261008b"></script>
+</body>
+</html>

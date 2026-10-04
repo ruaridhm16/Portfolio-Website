@@ -21,28 +21,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="icon" href="logo-light.png" media="(prefers-color-scheme: light)" />
   <link rel="icon" href="logo-dark.png" media="(prefers-color-scheme: dark)" />
-  <title>Swivelcut — Ruaridh Murdoch</title>
+  <title>Swivelcut</title>
   <meta name="description" content="Swivelcut is a modular cardboard cutting tool for Design & Technology students, engineered from force testing through to a validated final design." />
 
   <link rel="preload" href="misc/fonts/PlusJakartaSans-Variable.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="styles.css?v=20261005m" />
+  <link rel="stylesheet" href="styles.css?v=20261010d" />
 </head>
 <body>
 
   <a class="skip-link" href="#caseMain">Skip to main content</a>
 
-  <button class="case-back-btn" id="backBtn" aria-label="Back to portfolio">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+  <button class="case-back-btn" id="backBtn" aria-label="Back to portfolio" style="--case-accent:#34936F">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
   </button>
 
-  <header class="case-page-header">
-    <button class="logo" id="logoBtn" type="button" aria-label="Toggle dark mode"></button>
-  </header>
-
   <div id="caseContent">
-    <div class="case-accent-rule" style="--case-accent:#34936F"></div>
 
-    <main id="caseMain" style="--case-accent:#34936F">
+    <main id="caseMain" style="--case-accent:#34936F;--accent:#34936F">
+      <div class="sc-cut" aria-hidden="true"><span class="sc-cut-done"></span></div>
       <div class="case-header scroll-reveal">
         <div class="case-heading-row">
           <p class="case-title">Swivelcut</p>
@@ -50,8 +46,7 @@
 
         <div class="case-hero-row">
           <div>
-            <p class="case-lede">A compact cardboard-cutting system that makes low-fidelity prototyping safer, more accurate and more accessible in secondary school Design &amp; Technology workshops.</p>
-            <p class="case-lede">It grew out of research across two schools, where students told us cardboard modelling was slow, rough and risky with a craft knife. A fold-away arm with swappable heads: students trace a shape by hand, then the arm cuts it with an enclosed blade, so they don&rsquo;t need any CAD.</p>
+            <p class="case-lede rr-lede"><span>A <b>compact cardboard-cutting system</b> that makes low-fidelity prototyping <b>safer</b>, more <b>accurate</b> and more <b>accessible</b> in secondary school Design &amp; Technology workshops.</span> It grew out of research across two schools, where students told us cardboard modelling was slow, rough and risky with a craft knife. A fold-away arm with swappable heads: students trace a shape by hand, then the arm cuts it with an enclosed blade, so they don&rsquo;t need any CAD.</p>
 
             <div class="case-credit-tags">
               <span>Product Design Engineering</span>
@@ -230,16 +225,12 @@
 
   <footer class="site-footer">
     <p>&copy; <span id="year"></span> Ruaridh Murdoch. All rights reserved.</p>
-    <div class="footer-links">
-      <a href="https://github.com/ruaridhm16" target="_blank" rel="noopener">GitHub</a>
-      <a href="https://www.linkedin.com/in/ruaridh-murdoch-399ba4260/" target="_blank" rel="noopener">LinkedIn</a>
-      <a href="mailto:ruaridhm16@gmail.com">Email</a>
-    </div>
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.js"></script>
-  <script src="flipbook.js?v=20261005m"></script>
-  <script src="gallery.js?v=20261005m"></script>
-  <script src="case-page.js?v=20261005m"></script>
+  <script src="flipbook.js?v=20261006a"></script>
+  <script src="gallery.js?v=20261008b"></script>
+  <script src="cutline.js?v=20261008a"></script>
+  <script src="case-page.js?v=20261008b"></script>
 </body>
 </html>

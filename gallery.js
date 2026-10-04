@@ -1,8 +1,13 @@
+const GALLERY_NARROW_SCREEN = '(max-width: 860px)';
+
 function slidesFrom(template) {
   return [...template.content.querySelectorAll('figure')].map(f => {
     const img = f.querySelector('img');
     return {
       action: f.dataset.action || '',
+      video: f.dataset.video || '',
+      videoMobile: f.dataset.videoMobile || '',
+      sound: f.hasAttribute('data-sound'),
       src: img.getAttribute('src'),
       width: img.getAttribute('width'),
       height: img.getAttribute('height'),
@@ -13,6 +18,13 @@ function slidesFrom(template) {
 
 function createViewer(overlay, slides, { go: onGo, onClose, returnFocus } = {}) {
   const img = overlay.querySelector('.gallery-stage img');
+  const clip = document.createElement('video');
+  clip.autoplay = true;
+  clip.loop = true;
+  clip.muted = true;
+  clip.playsInline = true;
+  clip.hidden = true;
+  img.after(clip);
   const caption = overlay.querySelector('.gallery-caption');
   const closeBtn = overlay.querySelector('.gallery-close');
   const n = slides.length;
@@ -29,6 +41,22 @@ function createViewer(overlay, slides, { go: onGo, onClose, returnFocus } = {}) 
 
   function setFace(slide) {
     img.classList.remove('visible');
+    clip.classList.remove('visible');
+    clip.pause();
+    if (slide.video) {
+      img.hidden = true;
+      clip.hidden = false;
+      clip.poster = slide.src;
+      clip.muted = !slide.sound;
+      clip.controls = slide.sound;
+      clip.src = window.matchMedia(GALLERY_NARROW_SCREEN).matches && slide.videoMobile ? slide.videoMobile : slide.video;
+      caption.textContent = slide.caption;
+      clip.play().catch(() => {});
+      requestAnimationFrame(() => clip.classList.add('visible'));
+      return;
+    }
+    img.hidden = false;
+    clip.hidden = true;
     const preload = new Image();
     preload.onload = () => {
       img.src = slide.src;
@@ -58,6 +86,7 @@ function createViewer(overlay, slides, { go: onGo, onClose, returnFocus } = {}) 
   function close() {
     overlay.classList.remove('open');
     overlay.setAttribute('aria-hidden', 'true');
+    clip.pause();
     if (onClose) onClose(index);
     if (returnFocus) returnFocus.focus();
   }
@@ -97,9 +126,18 @@ function initPhotoStrip(scope, cleanups) {
   const AUTOPLAY_MS = 4500;
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const expandBtn = scope.querySelector('#galleryDisplayBtn');
+  const narrow = window.matchMedia(GALLERY_NARROW_SCREEN).matches;
   const cells = [];
   let hovering = false;
   let touching = false;
+
+  const clipObserver = narrow ? new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) entry.target.play().catch(() => {});
+      else entry.target.pause();
+    });
+  }, { threshold: 0.25 }) : null;
+  if (clipObserver) cleanups.push(() => clipObserver.disconnect());
 
   const viewer = createViewer(overlay, photos, {
     go: i => { if (!viewer.isOpen()) scrollToPhoto(i); },
@@ -108,23 +146,41 @@ function initPhotoStrip(scope, cleanups) {
   });
   cleanups.push(viewer.destroy);
 
-  for (let copy = 0; copy < 3; copy++) {
+  const copies = narrow ? 1 : 3;
+  const mainCopy = narrow ? 0 : 1;
+
+  for (let copy = 0; copy < copies; copy++) {
     slides.forEach((slide, i) => {
       const cell = document.createElement('div');
       cell.className = 'case-gallery-cell';
       cell.dataset.i = i;
       if (slide.action) cell.classList.add('case-gallery-cell--' + slide.action);
-      if (copy !== 1) cell.setAttribute('aria-hidden', 'true');
+      if (copy !== mainCopy) cell.setAttribute('aria-hidden', 'true');
       const btn = document.createElement('button');
       btn.type = 'button';
-      btn.tabIndex = copy === 1 ? 0 : -1;
+      btn.tabIndex = copy === mainCopy ? 0 : -1;
       btn.setAttribute('aria-label', slide.action === 'guide' ? 'Read the user guide' : `Open photo ${i + 1} fullscreen`);
-      const im = document.createElement('img');
-      im.src = slide.src;
-      im.alt = slide.caption;
-      im.draggable = false;
-      im.decoding = 'async';
-      im.loading = copy === 1 ? 'eager' : 'lazy';
+      const im = document.createElement(slide.video ? 'video' : 'img');
+      if (slide.video) {
+        im.src = narrow && slide.videoMobile ? slide.videoMobile : slide.video;
+        im.poster = slide.src;
+        im.autoplay = !narrow;
+        if (narrow) {
+          im.preload = 'none';
+          clipObserver.observe(im);
+        }
+        im.loop = true;
+        im.muted = true;
+        im.controls = slide.sound && narrow;
+        im.playsInline = true;
+        im.setAttribute('aria-label', slide.caption);
+      } else {
+        im.src = slide.src;
+        im.alt = slide.caption;
+        im.draggable = false;
+        im.decoding = 'async';
+        im.loading = copy === mainCopy && !narrow ? 'eager' : 'lazy';
+      }
       im.width = slide.width;
       im.height = slide.height;
       btn.appendChild(im);
@@ -176,9 +232,11 @@ function initPhotoStrip(scope, cleanups) {
     const cell = e.target.closest('.case-gallery-cell');
     if (!cell) return;
     if (cell.classList.contains('case-gallery-cell--guide')) { document.dispatchEvent(new CustomEvent('open-guide')); return; }
+    if (narrow) return;
     viewer.go(Number(cell.dataset.i));
     viewer.open();
   });
+  if (narrow) return;
   track.scrollLeft = cells[n].offsetLeft;
   requestAnimationFrame(() => { track.scrollLeft = cells[n].offsetLeft; });
 

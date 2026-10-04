@@ -1,13 +1,13 @@
 body, html {
   margin: 0;
   padding: 0;
-  background-color: black; /* set background color to black */
+  background-color: black;
 }
 
 .map-container {
   width: 100%;
   display: flex;
-  justify-content: center; /* center the image horizontally */
+  justify-content: center;
   overflow-x: hidden;
 }
 

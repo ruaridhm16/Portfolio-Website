@@ -86,10 +86,15 @@ function initPDF() {
     pdfDoc     = pdf;
     totalPages = pdf.numPages;
     showPage(1);
-    preparePrintPages();
+    schedulePrintPages();
   }).catch(() => {
     loadingEl.querySelector('span').textContent = 'Could not load portfolio PDF.';
   });
+}
+
+function schedulePrintPages() {
+  const start = () => ('requestIdleCallback' in window ? requestIdleCallback(preparePrintPages) : preparePrintPages());
+  setTimeout(start, 5000);
 }
 
 let printPagesReady = false;
@@ -395,7 +400,34 @@ async function fetchSheetContent(url) {
   return innerHtml;
 }
 
-async function openSheet(url) {
+const NARROW_SCREEN = '(max-width: 860px)';
+
+const warmedImages = new Set();
+
+function warmSheetImages(url) {
+  if (warmedImages.has(url)) return;
+  warmedImages.add(url);
+  fetchSheetContent(url).then(html => {
+    const srcs = new Set(Array.from(html.matchAll(/<img[^>]+src="([^"]+)"/g), m => m[1]));
+    srcs.forEach(src => { new Image().src = src; });
+  }).catch(() => {});
+}
+
+function sheetPages() {
+  return new Set(Array.from(document.querySelectorAll('a.accent-btn, a.file-btn.accent'), a => a.getAttribute('href').split('#')[0]));
+}
+
+window.addEventListener('load', () => {
+  if (window.matchMedia(NARROW_SCREEN).matches) return;
+  setTimeout(() => sheetPages().forEach(url => fetchSheetContent(url).catch(() => {})), 2000);
+});
+
+document.addEventListener('pointerover', e => {
+  const link = e.target.closest('a.accent-btn, a.file-btn.accent');
+  if (link && !window.matchMedia(NARROW_SCREEN).matches) warmSheetImages(link.getAttribute('href').split('#')[0]);
+});
+
+async function openSheet(url, anchor) {
   sheetLastTrigger = document.activeElement;
   sheetOverlay.classList.add('open');
   sheetOverlay.setAttribute('aria-hidden', 'false');
@@ -413,6 +445,13 @@ async function openSheet(url) {
     syncSheetScrollbar();
     initGallery(sheetBody);
     initFlipbooks(sheetBody);
+    initSimulator(sheetBody);
+    initGlow(sheetBody);
+    initCutLine(sheetBody);
+    initClips(sheetBody);
+    initFit(sheetBody);
+    const anchorEl = anchor && sheetBody.querySelector('#' + anchor);
+    if (anchorEl) anchorEl.scrollIntoView({ block: 'center' });
   } catch (err) {
     console.error(err);
     closeSheet();
@@ -421,12 +460,145 @@ async function openSheet(url) {
 }
 
 function closeSheet() {
+  if (initSimulator.destroy) initSimulator.destroy();
+  if (initGlow.destroy) initGlow.destroy();
+  if (initCutLine.destroy) initCutLine.destroy();
+  if (initClips.destroy) initClips.destroy();
+  if (initFit.destroy) initFit.destroy();
   sheetOverlay.classList.remove('open');
   sheetOverlay.setAttribute('aria-hidden', 'true');
   document.body.style.overflow = '';
   setBackgroundInert(false);
   if (sheetLastTrigger) { sheetLastTrigger.focus(); sheetLastTrigger = null; }
 }
+
+const videoOverlay = document.getElementById('videoOverlay');
+const videoPlayer = document.getElementById('videoPlayer');
+const videoPlay = document.getElementById('videoPlay');
+const videoTitle = document.getElementById('videoTitle');
+const videoStage = document.querySelector('.video-stage');
+const videoSeek = document.getElementById('videoSeek');
+const videoTime = document.getElementById('videoTime');
+const videoLength = document.getElementById('videoLength');
+let videoLastTrigger = null;
+
+function formatVideoTime(seconds) {
+  const s = Math.floor(seconds || 0);
+  return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+}
+
+function syncVideoProgress() {
+  const duration = videoPlayer.duration || 0;
+  const played = duration ? videoPlayer.currentTime / duration : 0;
+  videoSeek.value = Math.round(played * 1000);
+  videoSeek.style.setProperty('--p', (played * 100) + '%');
+  videoTime.textContent = formatVideoTime(videoPlayer.currentTime);
+  videoLength.textContent = formatVideoTime(duration);
+}
+
+let videoDirect = false;
+
+function enterVideoFullscreen() {
+  if (videoPlayer.requestFullscreen) videoPlayer.requestFullscreen().catch(() => {});
+  else if (videoPlayer.webkitEnterFullscreen) videoPlayer.webkitEnterFullscreen();
+}
+
+function playVideoDirect(src) {
+  videoDirect = true;
+  if (videoPlayer.getAttribute('src') !== src) videoPlayer.src = src;
+  videoPlayer.controls = true;
+  videoStage.classList.add('native');
+  videoPlayer.addEventListener('playing', enterVideoFullscreen, { once: true });
+  videoPlayer.play().catch(() => {});
+}
+
+function stopVideoDirect() {
+  if (!videoDirect || document.fullscreenElement) return;
+  videoDirect = false;
+  videoPlayer.pause();
+  videoPlayer.removeAttribute('src');
+  videoPlayer.load();
+  videoPlayer.controls = false;
+  videoStage.classList.remove('native');
+}
+
+document.addEventListener('fullscreenchange', stopVideoDirect);
+videoPlayer.addEventListener('webkitendfullscreen', stopVideoDirect);
+
+function openVideo(src, title) {
+  if (window.matchMedia(NARROW_SCREEN).matches) {
+    playVideoDirect(src);
+    return;
+  }
+  videoLastTrigger = document.activeElement;
+  if (videoPlayer.getAttribute('src') !== src) videoPlayer.src = src;
+  syncVideoProgress();
+  videoTitle.textContent = title || '';
+  videoOverlay.classList.add('open', 'idle');
+  videoOverlay.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+  setBackgroundInert(true);
+  videoPlay.focus();
+}
+
+function closeVideo() {
+  if (document.fullscreenElement) document.exitFullscreen();
+  videoPlayer.pause();
+  videoPlayer.removeAttribute('src');
+  videoPlayer.load();
+  videoOverlay.classList.remove('open');
+  videoOverlay.classList.add('idle');
+  videoOverlay.setAttribute('aria-hidden', 'true');
+  document.body.style.overflow = '';
+  setBackgroundInert(false);
+  if (videoLastTrigger) { videoLastTrigger.focus(); videoLastTrigger = null; }
+}
+
+videoPlay.addEventListener('click', () => videoPlayer.play());
+videoPlayer.addEventListener('play', () => {
+  videoOverlay.classList.remove('idle');
+  videoStage.classList.add('playing');
+});
+videoPlayer.addEventListener('pause', () => videoStage.classList.remove('playing'));
+videoPlayer.addEventListener('ended', () => {
+  videoOverlay.classList.add('idle');
+  videoStage.classList.remove('playing');
+});
+['timeupdate', 'loadedmetadata', 'durationchange', 'seeked'].forEach(type => videoPlayer.addEventListener(type, syncVideoProgress));
+videoSeek.addEventListener('input', () => {
+  if (!videoPlayer.duration) return;
+  videoPlayer.currentTime = (videoSeek.value / 1000) * videoPlayer.duration;
+  syncVideoProgress();
+});
+const toggleVideo = () => (videoPlayer.paused ? videoPlayer.play() : videoPlayer.pause());
+videoPlayer.addEventListener('click', () => { if (!videoPlayer.controls) toggleVideo(); });
+document.getElementById('videoToggle').addEventListener('click', toggleVideo);
+document.getElementById('videoMute').addEventListener('click', () => {
+  videoPlayer.muted = !videoPlayer.muted;
+  videoStage.classList.toggle('muted', videoPlayer.muted);
+});
+document.getElementById('videoFull').addEventListener('click', () => {
+  if (document.fullscreenElement) document.exitFullscreen();
+  else if (videoStage.requestFullscreen) videoStage.requestFullscreen();
+  else if (videoPlayer.webkitEnterFullscreen) videoPlayer.webkitEnterFullscreen();
+});
+document.getElementById('videoClose').addEventListener('click', closeVideo);
+videoOverlay.addEventListener('click', e => {
+  if (e.target === videoOverlay) closeVideo();
+});
+
+document.addEventListener('pointerover', e => {
+  const link = e.target.closest('a.video-btn');
+  if (!link || videoDirect || videoOverlay.classList.contains('open')) return;
+  if (videoPlayer.getAttribute('src') !== link.getAttribute('href')) videoPlayer.src = link.getAttribute('href');
+});
+
+document.addEventListener('click', e => {
+  const link = e.target.closest('a.video-btn');
+  if (!link) return;
+  e.preventDefault();
+  openVideo(link.getAttribute('href'), link.dataset.title);
+});
 
 sheetClose.addEventListener('click', closeSheet);
 sheetOverlay.addEventListener('click', e => {
@@ -435,15 +607,18 @@ sheetOverlay.addEventListener('click', e => {
 
 document.addEventListener('click', e => {
   const link = e.target.closest('a.accent-btn, a.file-btn.accent');
-  if (!link) return;
+  if (!link || window.matchMedia(NARROW_SCREEN).matches) return;
   e.preventDefault();
-  openSheet(link.getAttribute('href'));
+  const [page, anchor] = link.getAttribute('href').split('#');
+  openSheet(page, anchor);
 });
 
 document.addEventListener('keydown', e => {
   if (e.key !== 'Tab') return;
   let focusable;
-  if (projectOverlay.classList.contains('open')) {
+  if (videoOverlay.classList.contains('open')) {
+    focusable = getFocusable(videoOverlay);
+  } else if (projectOverlay.classList.contains('open')) {
     focusable = getFocusable(projectOverlayPanel, projectOverlayShadow);
   } else if (sheetOverlay.classList.contains('open')) {
     focusable = getFocusable(sheetPanel);
@@ -467,7 +642,8 @@ document.addEventListener('keydown', e => {
   if (e.key !== 'Escape') return;
   const openGalleryOverlay = sheetBody.querySelector('.gallery-overlay.open');
   if (openGalleryOverlay) return;
-  if (projectOverlay.classList.contains('open')) closeProjectOverlay();
+  if (videoOverlay.classList.contains('open')) closeVideo();
+  else if (projectOverlay.classList.contains('open')) closeProjectOverlay();
   else if (sheetOverlay.classList.contains('open')) closeSheet();
 });
 
@@ -506,7 +682,7 @@ function renderCarousel(projects) {
       );
     } else if (p.file) {
       buttons.push(
-        `<a href="${p.file}" target="_blank" class="card-btn primary" data-prefetch="${p.file}">Read</a>`
+        `<a href="${p.file}" target="_blank" class="card-btn ${p.video ? 'sim-btn' : 'primary'}" data-prefetch="${p.file}">Read</a>`
       );
     }
 
@@ -519,11 +695,18 @@ function renderCarousel(projects) {
       );
     }
 
+    if (p.video) {
+      buttons.push(
+        `<a href="${p.video}" class="card-btn primary video-btn" data-title="${p.title}">Watch</a>`
+      );
+    }
+
     const actions = buttons.join('');
 
     const badges = [];
     if (simulatorLive) badges.push(`<a href="${p.simulator}" target="_blank" class="sim-badge"><span class="sim-badge-face">Try it live</span></a>`);
     if (game && p.website && !isExternal(p.website)) badges.push(`<a href="${p.website}" class="sim-badge"><span class="sim-badge-face">Play now</span></a>`);
+    if (p.article && p.tryLive) badges.push(`<a href="${p.article}.html#trySim" class="sim-badge accent-btn"><span class="sim-badge-face">Try it live</span></a>`);
     if (p.badge) badges.push(p.article
       ? `<a href="${p.article}.html" class="sim-badge accent-btn"><span class="sim-badge-face">${p.badge}</span></a>`
       : `<span class="sim-badge"><span class="sim-badge-face">${p.badge}</span></span>`);
@@ -598,7 +781,7 @@ function renderFiles(projects) {
         );
       } else if (p.file) {
         buttons.push(
-          `<a href="${p.file}" target="_blank" class="file-btn dl" data-prefetch="${p.file}">Read</a>`
+          `<a href="${p.file}" target="_blank" class="file-btn${p.video ? '' : ' dl'}" data-prefetch="${p.file}">Read</a>`
         );
       }
 
@@ -608,6 +791,12 @@ function renderFiles(projects) {
         const websiteLabel = game ? (websiteExternal ? 'Itch.io' : 'Play') : 'Visit';
         buttons.push(
           `<a href="${p.website}"${websiteTarget} class="file-btn dl">${websiteLabel}</a>`
+        );
+      }
+
+      if (p.video) {
+        buttons.push(
+          `<a href="${p.video}" class="file-btn dl video-btn" data-title="${p.title}">Watch</a>`
         );
       }
 
@@ -1264,8 +1453,20 @@ loadProjects();
 initPDF();
 document.getElementById('year').textContent = new Date().getFullYear();
 
+const FADE_FLAG = 'breakpointFade';
 let breakpointReloadTimer = null;
-window.matchMedia('(max-width: 860px)').addEventListener('change', () => {
+window.matchMedia(NARROW_SCREEN).addEventListener('change', () => {
+  document.body.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 250, easing: 'ease-in', fill: 'forwards' });
   clearTimeout(breakpointReloadTimer);
-  breakpointReloadTimer = setTimeout(() => location.reload(), 400);
+  breakpointReloadTimer = setTimeout(() => {
+    try { sessionStorage.setItem(FADE_FLAG, '1'); } catch (e) {}
+    location.reload();
+  }, 280);
 });
+
+try {
+  if (sessionStorage.getItem(FADE_FLAG)) {
+    sessionStorage.removeItem(FADE_FLAG);
+    document.body.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 450, easing: 'ease-out' });
+  }
+} catch (e) {}

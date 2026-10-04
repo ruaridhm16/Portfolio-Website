@@ -1,17 +1,3 @@
-function initDarkMode() {
-  const logoBtn = document.getElementById('logoBtn');
-  function syncLabel(isDark) {
-    logoBtn.setAttribute('aria-label', isDark ? 'Switch to light mode' : 'Switch to dark mode');
-  }
-  syncLabel(document.documentElement.classList.contains('dark'));
-  logoBtn.addEventListener('click', () => {
-    const isDark = document.documentElement.classList.toggle('dark');
-    if (isDark) localStorage.setItem('t', '');
-    else localStorage.removeItem('t');
-    syncLabel(isDark);
-  });
-}
-
 function initBackButton() {
   document.getElementById('backBtn').addEventListener('click', () => {
     window.location.href = 'index.html';
@@ -32,8 +18,23 @@ function observeScrollReveal() {
 }
 
 document.getElementById('year').textContent = new Date().getFullYear();
-initDarkMode();
 initBackButton();
 observeScrollReveal();
-initGallery();
-initFlipbooks();
+if (typeof initGallery === 'function') initGallery();
+if (typeof initFlipbooks === 'function') initFlipbooks();
+if (typeof initSimulator === 'function') initSimulator();
+if (typeof initGlow === 'function') initGlow();
+if (typeof initCutLine === 'function') initCutLine();
+if (typeof initClips === 'function') initClips();
+if (typeof initFit === 'function') initFit();
+
+const hashTarget = location.hash && document.getElementById(location.hash.slice(1));
+if (hashTarget) {
+  const toTarget = () => hashTarget.scrollIntoView({ block: 'center', behavior: 'instant' });
+  toTarget();
+  window.addEventListener('load', toTarget);
+}
+
+window.matchMedia('(max-width: 860px)').addEventListener('change', () => {
+  document.body.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 450, easing: 'ease-out' });
+});

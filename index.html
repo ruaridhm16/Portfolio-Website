@@ -60,7 +60,7 @@
   </script>
 
   <link rel="preload" href="misc/fonts/PlusJakartaSans-Variable.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="styles.css?v=20261005m" />
+  <link rel="stylesheet" href="styles.css?v=20261010d" />
 </head>
 <body>
 
@@ -300,6 +300,37 @@
     </div>
   </div>
 
+  <div class="video-overlay idle" id="videoOverlay" aria-hidden="true">
+    <div class="video-panel" id="videoPanel" role="dialog" aria-modal="true" aria-label="Project video" tabindex="-1">
+      <button class="video-close" id="videoClose" type="button" aria-label="Close video">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+      </button>
+      <p class="video-title" id="videoTitle"></p>
+      <div class="video-stage">
+        <video id="videoPlayer" playsinline preload="metadata" controlsList="nodownload noplaybackrate" disablePictureInPicture disableRemotePlayback oncontextmenu="return false"></video>
+        <button class="video-play" id="videoPlay" type="button" aria-label="Play video">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 3 20 12 6 21"/></svg>
+        </button>
+        <div class="video-bar">
+          <button id="videoToggle" type="button" aria-label="Play or pause">
+            <svg class="icon-play" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 3 20 12 6 21"/></svg>
+            <svg class="icon-pause" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="3" width="5" height="18"/><rect x="14" y="3" width="5" height="18"/></svg>
+          </button>
+          <span id="videoTime">0:00</span>
+          <input class="video-seek" id="videoSeek" type="range" min="0" max="1000" step="1" value="0" aria-label="Seek">
+          <span id="videoLength">0:00</span>
+          <button id="videoMute" type="button" aria-label="Mute or unmute">
+            <svg class="icon-sound" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 9 8 9 13 4 13 20 8 15 3 15" fill="currentColor"/><path d="M17 8.5a5 5 0 0 1 0 7"/></svg>
+            <svg class="icon-muted" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 9 8 9 13 4 13 20 8 15 3 15" fill="currentColor"/><line x1="17" y1="9" x2="22" y2="15"/><line x1="22" y1="9" x2="17" y2="15"/></svg>
+          </button>
+          <button id="videoFull" type="button" aria-label="Fullscreen">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="sheet-overlay" id="sheetOverlay" aria-hidden="true">
     <div class="sheet-panel" id="sheetPanel" role="dialog" aria-modal="true" aria-label="Project write-up" tabindex="-1">
       <button class="sheet-close" id="sheetClose" type="button" aria-label="Close">
@@ -314,8 +345,13 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.js"></script>
-  <script src="flipbook.js?v=20261005m"></script>
-  <script src="gallery.js?v=20261005m"></script>
-  <script src="script.js?v=20261005m"></script>
+  <script src="flipbook.js?v=20261006a"></script>
+  <script src="gallery.js?v=20261008b"></script>
+  <script src="cutline.js?v=20261008a"></script>
+  <script src="clips.js?v=20261010b"></script>
+  <script src="fit.js?v=20261009a"></script>
+  <script src="glow.js?v=20261007b"></script>
+  <script src="simulator.js?v=20261010a"></script>
+  <script src="script.js?v=20261009b"></script>
 </body>
 </html>

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <script>
+    (function () {
+      if (localStorage.getItem('t') !== null) {
+        document.documentElement.classList.add('dark');
+      }
+    })();
+  </script>
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-6WZL3FE204"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-6WZL3FE204');
+  </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" href="logo-light.png" media="(prefers-color-scheme: light)" />
+  <link rel="icon" href="logo-dark.png" media="(prefers-color-scheme: dark)" />
+  <title>Balancing Segway</title>
+  <meta name="description" content="A two-wheeled robot that balances itself with a PID loop, built in MicroPython on the PyBench board for Electronics 2 at Imperial." />
+
+  <link rel="preload" href="misc/fonts/PlusJakartaSans-Variable.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="styles.css?v=20261010d" />
+</head>
+<body>
+
+  <a class="skip-link" href="#caseMain">Skip to main content</a>
+
+  <button class="case-back-btn" id="backBtn" aria-label="Back to portfolio" style="--case-accent:#23704A">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+  </button>
+
+  <div id="caseContent">
+
+    <main id="caseMain" class="sg" style="--case-accent:#23704A;--accent:#23704A">
+      <div class="case-header scroll-reveal">
+        <div class="sg-fit">
+          <div class="case-hero-row">
+            <div class="sg-hero-text">
+              <p class="case-title">Balancing Segway</p>
+              <p class="case-lede rr-lede"><span>A <b>two-wheeled robot</b> that balances itself with a <b>PID loop</b>.</span> Built in MicroPython on the PyBench board, it reads its tilt 200 times a second and drives two motors to stay upright. We made it for Electronics 2, taught by <a href="http://www.ee.ic.ac.uk/pcheung/" target="_blank" rel="noopener">Professor Peter Cheung</a>, who also designed the PyBench board.</p>
+
+              <div class="sg-credit">
+                <span class="case-credit-label">Developed with</span>
+                <div class="case-credit-people">
+                  <a href="https://www.linkedin.com/in/rhyswijeratne/" target="_blank" rel="noopener"><img src="projects/swivelcut/figma/rhys.webp" alt=""><span>Rhys Wijeratne</span></a>
+                </div>
+              </div>
+
+              <div class="case-actions">
+                <div class="case-action-group">
+                  <a href="projects/segway/video/scared.mp4" class="card-btn primary" data-popup-video>Say boo</a>
+                </div>
+              </div>
+            </div>
+            <figure class="sg-board">
+              <img src="projects/segway/pybench.webp" width="1000" height="848" alt="The PyBench board from above, with the Pyboard, IMU, microphone, motor driver and screen">
+            </figure>
+          </div>
+        </div>
+      </div>
+
+      <div class="case-header sg-body">
+        <div class="sg-fit">
+          <section class="case-prose">
+            <p class="case-lede">The robot measures its tilt with an IMU, which has a gyroscope and an accelerometer. The gyro is smooth but slowly drifts. The accelerometer doesn&rsquo;t drift, but it&rsquo;s noisy. A complementary filter blends the two, taking 95% from the gyro and 5% from the accelerometer, which gives a tilt reading that&rsquo;s both smooth and steady.</p>
+            <p class="case-lede">That reading goes into a PID controller, which compares the robot&rsquo;s angle with upright and drives both wheels to close the gap:</p>
+            <p class="sg-formula" aria-label="u equals Kp times error plus Ki times integral minus Kd times rate"><span>u</span> = K<sub>p</sub> &times; error + K<sub>i</sub> &times; integral &minus; K<sub>d</sub> &times; rate</p>
+            <div class="sg-balance">
+              <div class="sg-terms">
+                <div class="sg-term">
+                  <span class="sg-letter" aria-hidden="true">P</span>
+                  <h3>Proportional</h3>
+                  <p>Multiplies the error by a gain, Kp, so the bigger the error, the bigger the push. On its own it usually leaves a small steady offset.</p>
+                  <p class="sg-warn"><b>Too much P</b> and it oscillates.</p>
+                </div>
+                <div class="sg-term">
+                  <span class="sg-letter" aria-hidden="true">I</span>
+                  <h3>Integral</h3>
+                  <p>Adds up the error over time and multiplies it by Ki. If P alone never quite reaches the target, the integral keeps building until it does.</p>
+                  <p class="sg-warn"><b>Too much I</b> and it winds up and overshoots.</p>
+                </div>
+                <div class="sg-term">
+                  <span class="sg-letter" aria-hidden="true">D</span>
+                  <h3>Derivative</h3>
+                  <p>Looks at how fast the error is changing and multiplies that by Kd, which eases off as the robot approaches the target. We take the rate straight from the gyroscope, because dividing noisy IMU readings by a tiny time step would amplify the noise.</p>
+                  <p class="sg-warn"><b>Too much D</b> and it gets sensitive to noise.</p>
+                </div>
+              </div>
+              <div class="sg-right">
+                <p class="case-lede">Tuning was the hard part. Each gain fixes one problem and causes another, so we spent a long time hanging the robot from elastic cord, watching how it failed and working out which term was to blame. We changed one value at a time until it finally stood up on its own.</p>
+                <figure class="sg-clip">
+                  <video src="projects/segway/video/balancing.mp4" poster="projects/segway/video/balancing.webp" width="1080" height="1080" data-autoplay muted loop playsinline preload="none" aria-label="The Segway balancing on a carpet while a finger pokes it"></video>
+                </figure>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </main>
+
+  </div>
+
+  <footer class="site-footer">
+    <p>&copy; <span id="year"></span> Ruaridh Murdoch. All rights reserved.</p>
+  </footer>
+
+  <script src="clips.js?v=20261010b"></script>
+  <script src="fit.js?v=20261009a"></script>
+  <script src="case-page.js?v=20261009a"></script>
+</body>
+</html>
