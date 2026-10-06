@@ -8,6 +8,12 @@
       if (localStorage.getItem('t') !== null) {
         document.documentElement.classList.add('dark');
       }
+
+      try {
+        if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches && !sessionStorage.getItem('breakpointReload')) {
+          document.documentElement.setAttribute('data-intro', 'on');
+        }
+      } catch (e) {}
     })();
   </script>
 
@@ -60,7 +66,7 @@
   </script>
 
   <link rel="preload" href="misc/fonts/PlusJakartaSans-Variable.woff2" as="font" type="font/woff2" crossorigin />
-  <link rel="stylesheet" href="styles.css?v=20261010d" />
+  <link rel="stylesheet" href="styles.css?v=20261120c" />
 </head>
 <body>
 
@@ -164,12 +170,55 @@
     </div>
     <div class="hero-left">
       <button class="logo" id="logoBtn" type="button" aria-label="Toggle dark mode"></button>
-      <h1>Ruaridh<br>Murdoch</h1>
+      <h1><span class="h1-line1">Ruaridh</span><br><span class="h1-line2">Murdoch</span></h1>
+      <script>
+        (function () {
+          if (!document.documentElement.hasAttribute('data-intro')) return;
+          var h1 = document.currentScript.previousElementSibling;
+          var original = h1.innerHTML;
+          var total = h1.textContent.replace(/\s/g, '').length;
+          var dirs = [[-0.35, 0], [0, 0.35], [0.35, 0], [0, -0.35]];
+          var n = 0;
+          function split(el) {
+            Array.prototype.slice.call(el.childNodes).forEach(function (node) {
+              if (node.nodeType === 3) {
+                var frag = document.createDocumentFragment();
+                node.textContent.split('').forEach(function (ch) {
+                  if (!ch.trim()) { frag.appendChild(document.createTextNode(ch)); return; }
+                  var s = document.createElement('span');
+                  var d = dirs[n % dirs.length];
+                  s.className = 'ch';
+                  s.style.setProperty('--o', (n * 5) % total);
+                  s.style.setProperty('--dx', d[0] + 'em');
+                  s.style.setProperty('--dy', d[1] + 'em');
+                  s.textContent = ch;
+                  frag.appendChild(s);
+                  n++;
+                });
+                node.parentNode.replaceChild(frag, node);
+              } else if (node.nodeType === 1 && node.tagName !== 'BR') split(node);
+            });
+          }
+          split(h1);
+          h1.setAttribute('aria-label', h1.textContent);
+          var remaining = n;
+          h1.addEventListener('animationend', function (e) {
+            if (!e.target.classList.contains('ch') || --remaining > 0) return;
+            h1.innerHTML = original;
+            h1.removeAttribute('aria-label');
+          });
+        })();
+      </script>
       <p class="desc">
-        Design Engineering student at Imperial College London, just completed second year – awarded the <strong>Head of School Prize</strong> for the highest average in my year. I work across mechanical design, electronics, and software, usually all at once. I love figuring out how to design and make almost anything. This site has my portfolios and reports for all <span id="projectCount">…</span> projects. Any and all code is on GitHub.
+        I'm a third-year <a class="text-link" href="https://www.imperial.ac.uk/design-engineering/" target="_blank" rel="noopener">Design Engineering</a> student at Imperial College London, ranked first in my cohort and awarded the <strong>Head of School Prize</strong>. I like getting to the bottom of a problem by talking to the people who have it, working across mechanical design, electronics and software to fix it. I'm looking for a placement to put this into practice somewhere I can learn fast.
       </p>
-      <p class="open-to-work">Looking for internship and placement opportunities.</p>
-      <a href="Ruaridh_Murdoch_CV.pdf?v=20261006b" download class="download-link cv-link">Download CV</a>
+      <p class="desc">
+        This site has portfolios and reports for <span id="projectCount">…</span> of my projects.
+      </p>
+      <div class="hero-links">
+        <a href="Ruaridh_Murdoch_CV.pdf?v=20261006b" download class="cv-link">Download CV</a>
+        <a href="Ruaridh_Murdoch_Portfolio.pdf" target="_blank" rel="noopener" class="portfolio-link">Portfolio PDF</a>
+      </div>
       <div class="social-icons">
         <a href="mailto:ruaridhm16@gmail.com" aria-label="Email">
           <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2Zm0 4-8 5-8-5V6l8 5 8-5v2Z"/></svg>
@@ -183,42 +232,9 @@
       </div>
     </div>
 
-    <div class="pdf-panel" id="pdfPanel">
-      <div class="pdf-viewer" id="pdfViewer">
-        <div class="pdf-canvas-wrap">
-          <canvas id="pdfCanvas"></canvas>
-          <canvas id="pdfCanvasNext"></canvas>
-          <button type="button" class="pdf-zone prev" id="pdfZonePrev" aria-label="Previous page">
-            <span class="pdf-zone-icon">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
-            </span>
-          </button>
-          <button type="button" class="pdf-zone next" id="pdfZoneNext" aria-label="Next page">
-            <span class="pdf-zone-icon">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-            </span>
-          </button>
-        </div>
-        <div class="pdf-loading" id="pdfLoading">
-          <div class="spinner"></div>
-          <span>Give it a sec…</span>
-        </div>
-        <div class="pdf-controls" id="pdfControls" style="display:none;">
-          <span class="pdf-page-info" id="pdfPageInfo">1 / 1</span>
-          <span class="pdf-hint">Click left or right to turn pages</span>
-        </div>
-      </div>
-      <a href="Display_Portfolio.pdf" target="_blank" class="pdf-mobile-btn">View Portfolio PDF</a>
-      <div class="pdf-footer-row">
-        <a href="Ruaridh_Murdoch_Portfolio.pdf" target="_blank" class="pdf-fullscreen-btn">Open in Fullscreen</a>
-        <a href="Ruaridh_Murdoch_Portfolio.pdf" download class="download-link portfolio-dl-link">Download Portfolio</a>
-      </div>
-    </div>
-
-    <a class="scroll-hint" id="scrollHint" href="#projects">
-      <span>Scroll for more</span>
-      <svg class="chev" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-    </a>
+    <figure class="hero-visual">
+      <img src="photos/me.webp" alt="Ruaridh at a workbench screwing together a 3D-printed mechanism" width="738" height="1265" fetchpriority="high" />
+    </figure>
   </div>
 
   <hr class="divider" />
@@ -236,6 +252,8 @@
       <div class="carousel-scrollbar-thumb" id="carouselThumb"></div>
     </div>
   </div>
+
+  <p class="current-note">Currently working on a project with Senior Teaching Fellow <a class="text-link" href="https://www.linkedin.com/in/audrey-gaulard-8091b338/" target="_blank" rel="noopener">Audrey Gaulard</a> on climate justice, focusing on climate-driven flooding and its environmental impact.</p>
 
   <div class="print-only print-skills">
     <h2>Skills</h2>
@@ -352,6 +370,6 @@
   <script src="fit.js?v=20261009a"></script>
   <script src="glow.js?v=20261007b"></script>
   <script src="simulator.js?v=20261010a"></script>
-  <script src="script.js?v=20261009b"></script>
+  <script src="script.js?v=20261116b"></script>
 </body>
 </html>

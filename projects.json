@@ -248,18 +248,6 @@
     "website": ""
   },
   {
-    "title": "Old Portfolio",
-    "desc": "My previous personal portfolio (March 2026), now retired in favour of a new version.",
-    "group": "Extra",
-    "tags": [
-      { "label": "Portfolio",   "style": "tag-personal" }
-    ],
-    "featured": false,
-    "image": "projects/Project_Image_Old_Portfolio.webp",
-    "file": "projects/Project_Old_Portfolio.pdf",
-    "website": ""
-  },
-  {
     "title": "Logo Design",
     "desc": "Just a small thing on making a logo because I thought it was cool",
     "group": "Extra",
@@ -280,7 +268,7 @@
       { "label": "Game Jam",  "style": "tag-personal" },
       { "label": "Unity / C#", "style": "tag-personal" }
     ],
-    "featured": true,
+    "featured": false,
     "image": "https://img.itch.zone/aW1hZ2UvMTk0NDkyNi8xMTQzODA4NC5wbmc=/794x1000/0X8bjq.png",
     "file": "",
     "website": "https://ruaridhm16.itch.io/duck-jam",

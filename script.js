@@ -3,95 +3,6 @@ const PDF_FILE = 'Display_Portfolio.pdf';
 pdfjsLib.GlobalWorkerOptions.workerSrc =
   'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-let pdfDoc      = null;
-let currentPage = 1;
-let totalPages  = 0;
-let rendering   = false;
-const pageCache = {};
-
-const canvasFront = document.getElementById('pdfCanvas');
-const canvasBack  = document.getElementById('pdfCanvasNext');
-const ctxFront    = canvasFront.getContext('2d');
-const ctxBack     = canvasBack.getContext('2d');
-const loadingEl   = document.getElementById('pdfLoading');
-const controls    = document.getElementById('pdfControls');
-const pageInfo    = document.getElementById('pdfPageInfo');
-const zonePrev    = document.getElementById('pdfZonePrev');
-const zoneNext    = document.getElementById('pdfZoneNext');
-
-function renderToOffscreen(pageNum) {
-  if (pageCache[pageNum]) return Promise.resolve(pageCache[pageNum]);
-  return pdfDoc.getPage(pageNum).then(page => {
-    const viewer = document.getElementById('pdfViewer');
-    const dpr    = Math.min(window.devicePixelRatio || 1, 2);
-    const scale  = (viewer.clientWidth / page.getViewport({ scale: 1 }).width) * dpr;
-    const vp     = page.getViewport({ scale });
-    const off    = document.createElement('canvas');
-    off.width    = vp.width;
-    off.height   = vp.height;
-    return page.render({ canvasContext: off.getContext('2d'), viewport: vp }).promise.then(() => {
-      pageCache[pageNum] = off;
-      return off;
-    });
-  });
-}
-
-function paintToCanvas(target, ctx, off) {
-  target.width  = off.width;
-  target.height = off.height;
-  ctx.drawImage(off, 0, 0);
-}
-
-function showPage(num) {
-  if (rendering) return;
-  rendering = true;
-
-  const alreadyCached = !!pageCache[num];
-
-  renderToOffscreen(num).then(off => {
-    paintToCanvas(canvasBack, ctxBack, off);
-    canvasBack.classList.add('show');
-    canvasFront.classList.add('hide');
-
-    const delay = alreadyCached ? 80 : 220;
-    setTimeout(() => {
-      paintToCanvas(canvasFront, ctxFront, off);
-      canvasFront.classList.remove('hide');
-      canvasBack.classList.remove('show');
-      rendering = false;
-
-      loadingEl.classList.add('hidden');
-      controls.style.display = 'flex';
-      pageInfo.textContent = `${num} / ${totalPages}`;
-      zonePrev.classList.toggle('hidden-btn', num <= 1);
-      zoneNext.classList.toggle('hidden-btn', num >= totalPages);
-
-      if (num + 1 <= totalPages) renderToOffscreen(num + 1);
-      if (num - 1 >= 1)          renderToOffscreen(num - 1);
-    }, delay);
-  });
-}
-
-function goNext() { if (currentPage < totalPages && !rendering) { currentPage++; showPage(currentPage); } }
-function goPrev() { if (currentPage > 1 && !rendering)          { currentPage--; showPage(currentPage); } }
-
-function initPDF() {
-  pdfjsLib.getDocument({
-    url: PDF_FILE,
-    disableRange: false,
-    disableStream: false,
-
-    rangeChunkSize: 32768,
-  }).promise.then(pdf => {
-    pdfDoc     = pdf;
-    totalPages = pdf.numPages;
-    showPage(1);
-    schedulePrintPages();
-  }).catch(() => {
-    loadingEl.querySelector('span').textContent = 'Could not load portfolio PDF.';
-  });
-}
-
 function schedulePrintPages() {
   const start = () => ('requestIdleCallback' in window ? requestIdleCallback(preparePrintPages) : preparePrintPages());
   setTimeout(start, 5000);
@@ -99,12 +10,13 @@ function schedulePrintPages() {
 
 let printPagesReady = false;
 async function preparePrintPages() {
-  if (printPagesReady || !pdfDoc) return;
+  if (printPagesReady) return;
   printPagesReady = true;
   const container = document.getElementById('printPdfPages');
   try {
-    for (let i = 1; i <= totalPages; i++) {
-      const page = await pdfDoc.getPage(i);
+    const pdf = await pdfjsLib.getDocument({ url: PDF_FILE }).promise;
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
       const vp = page.getViewport({ scale: 2 });
       const canvas = document.createElement('canvas');
       canvas.width = vp.width;
@@ -120,14 +32,6 @@ async function preparePrintPages() {
   }
 }
 window.addEventListener('beforeprint', preparePrintPages);
-
-zonePrev.addEventListener('click', goPrev);
-zoneNext.addEventListener('click', goNext);
-
-document.addEventListener('keydown', e => {
-  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goNext();
-  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   goPrev();
-});
 
 function tagsHtml(tags) {
   return (tags || []).map(t => `<span class="tag ${t.style}">${t.label}</span>`).join('');
@@ -195,7 +99,7 @@ document.addEventListener('touchstart', handlePrefetchIntent, { passive: true })
 document.addEventListener('focusin', handlePrefetchIntent);
 
 function isMobileViewport() {
-  return window.matchMedia('(max-width: 860px)').matches;
+  return window.matchMedia('(max-width: 800px)').matches;
 }
 
 const SIMULATOR_PAGES = new Set();
@@ -400,7 +304,7 @@ async function fetchSheetContent(url) {
   return innerHtml;
 }
 
-const NARROW_SCREEN = '(max-width: 860px)';
+const NARROW_SCREEN = '(max-width: 800px)';
 
 const warmedImages = new Set();
 
@@ -667,22 +571,22 @@ function renderCarousel(projects) {
 
     if (simulatorLive) {
       buttons.push(
-        `<a href="${p.simulator}" target="_blank" class="card-btn sim-btn">Simulator</a>`
+        `<a href="${p.simulator}" target="_blank" class="card-btn sim-btn" data-kind="sim">Simulator</a>`
       );
     }
     else if (p.repo) {
       buttons.push(
-        `<a href="${p.repo}" target="_blank" class="card-btn">GitHub</a>`
+        `<a href="${p.repo}" target="_blank" class="card-btn" data-kind="repo">GitHub</a>`
       );
     }
 
     if (p.article) {
       buttons.push(
-        `<a href="${p.article}.html" class="card-btn accent-btn">Read</a>`
+        `<a href="${p.article}.html" class="card-btn accent-btn" data-kind="article">Read</a>`
       );
     } else if (p.file) {
       buttons.push(
-        `<a href="${p.file}" target="_blank" class="card-btn ${p.video ? 'sim-btn' : 'primary'}" data-prefetch="${p.file}">Read</a>`
+        `<a href="${p.file}" target="_blank" class="card-btn ${p.video ? 'sim-btn' : 'primary'}" data-prefetch="${p.file}" data-kind="file">Read</a>`
       );
     }
 
@@ -691,13 +595,13 @@ function renderCarousel(projects) {
       const websiteTarget = websiteExternal ? ' target="_blank"' : '';
       const websiteLabel = game ? (websiteExternal ? 'Itch.io' : 'Play') : 'Visit';
       buttons.push(
-        `<a href="${p.website}"${websiteTarget} class="card-btn primary">${websiteLabel}</a>`
+        `<a href="${p.website}"${websiteTarget} class="card-btn primary" data-kind="website">${websiteLabel}</a>`
       );
     }
 
     if (p.video) {
       buttons.push(
-        `<a href="${p.video}" class="card-btn primary video-btn" data-title="${p.title}">Watch</a>`
+        `<a href="${p.video}" class="card-btn primary video-btn" data-title="${p.title}" data-kind="video">Watch</a>`
       );
     }
 
@@ -1007,8 +911,122 @@ function initCarousel() {
         obs.unobserve(e.target);
       }
     });
-  }, { threshold: 0.1 });
+  }, { threshold: 0 });
   slides.forEach(s => obs.observe(s));
+}
+
+function playCarouselIntro() {
+  if (!document.documentElement.hasAttribute('data-intro') || isMobileViewport()) return;
+  const container = document.getElementById('carouselContainer');
+  const section = document.querySelector('.carousel-section');
+  const heading = section && section.querySelector('.carousel-heading');
+  if (!container || !section || !heading || typeof container.animate !== 'function') return;
+
+  const k = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--k')) || 1;
+  container.querySelectorAll('.embla__slide').forEach(s => s.classList.add('in'));
+  const distance = container.scrollWidth + 80;
+  container.style.opacity = '0';
+  heading.style.opacity = '0';
+
+  let started = false;
+  function start() {
+    if (started) return;
+    started = true;
+    container.style.opacity = '';
+    heading.style.opacity = '';
+    container.animate(
+      [{ transform: `translateX(${-distance}px)` }, { transform: 'translateX(0)' }],
+      { duration: 2000 * k, easing: 'cubic-bezier(0.08, 0.8, 0.16, 1)' }
+    );
+    heading.animate(
+      [{ opacity: 0, transform: 'translateY(18px)' }, { opacity: 1, transform: 'none' }],
+      { duration: 600 * k, easing: 'cubic-bezier(0.2, 0.7, 0.2, 1)' }
+    );
+  }
+
+  setTimeout(() => {
+    const io = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting) { io.disconnect(); start(); }
+    });
+    io.observe(section);
+  }, Math.max(0, 1700 * k - performance.now()));
+}
+
+const CARD_MAIN_ORDER = ['video', 'article', 'website', 'sim', 'file', 'repo'];
+
+function cardMainAction(card) {
+  for (const kind of CARD_MAIN_ORDER) {
+    const el = card.querySelector(`.card-actions [data-kind="${kind}"]`);
+    if (el) return el;
+  }
+  return null;
+}
+
+function initCardClicks() {
+  const container = document.getElementById('carouselContainer');
+  if (!container) return;
+  const touchOnly = window.matchMedia('(hover: none)');
+  let down = null;
+  let armed = null;
+  let armTimer = null;
+
+  function disarm() {
+    if (armed) {
+      armed.classList.remove('tap-armed');
+      delete armed.querySelector('.card-img').dataset.hint;
+    }
+    armed = null;
+    clearTimeout(armTimer);
+  }
+
+  container.addEventListener('pointerdown', e => { down = { x: e.clientX, y: e.clientY }; });
+  container.querySelectorAll('.card').forEach(card => {
+    if (cardMainAction(card)) card.classList.add('has-main');
+  });
+
+  document.addEventListener('click', e => {
+    const card = e.target.closest('#carouselContainer .card');
+    if (!card) { disarm(); return; }
+    if (e.target.closest('a, button')) return;
+    const main = cardMainAction(card);
+    if (!main) return;
+    if (down && Math.hypot(e.clientX - down.x, e.clientY - down.y) > 6) return;
+    if (String(window.getSelection()).trim()) return;
+
+    if (touchOnly.matches) {
+      if (armed !== card) {
+        disarm();
+        armed = card;
+        card.classList.add('tap-armed');
+        card.querySelector('.card-img').dataset.hint = `Tap again to ${main.textContent.trim().toLowerCase()}`;
+        armTimer = setTimeout(disarm, 3000);
+        return;
+      }
+      disarm();
+    }
+    main.click();
+  });
+}
+
+function initFilesDropdown() {
+  if (!isMobileViewport()) return;
+  const wrap = document.querySelector('.files-toggle-wrap');
+  const heading = wrap && wrap.querySelector('.files-heading');
+  const inner = wrap && wrap.querySelector('.files-inner');
+  if (!heading || !inner) return;
+  heading.setAttribute('role', 'button');
+  heading.setAttribute('tabindex', '0');
+  heading.setAttribute('aria-controls', 'filesInner');
+  heading.setAttribute('aria-expanded', 'false');
+  heading.insertAdjacentHTML('beforeend', '<span class="files-chev" aria-hidden="true"></span>');
+  function toggle() {
+    const open = wrap.classList.toggle('open');
+    heading.setAttribute('aria-expanded', String(open));
+  }
+  heading.addEventListener('click', toggle);
+  heading.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
+  });
 }
 
 function initDarkMode() {
@@ -1104,37 +1122,6 @@ function initCVFeedback() {
   });
 }
 
-function initEasedScroll() {
-  const link = document.getElementById('scrollHint');
-  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  function easeInOutCubic(t) {
-    return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-  }
-
-  link.addEventListener('click', e => {
-    e.preventDefault();
-    const target = document.querySelector(link.getAttribute('href'));
-    if (!target) return;
-    const targetY = target.getBoundingClientRect().top + window.scrollY;
-
-    if (reducedMotion) { window.scrollTo(0, targetY); return; }
-
-    const startY = window.scrollY;
-    const diff = targetY - startY;
-    const duration = 900;
-    const startTime = performance.now();
-
-    function step(now) {
-      const progress = Math.min((now - startTime) / duration, 1);
-
-      window.scrollTo({ top: startY + diff * easeInOutCubic(progress), behavior: 'instant' });
-      if (progress < 1) requestAnimationFrame(step);
-    }
-    requestAnimationFrame(step);
-  });
-}
-
 function initEmailCopy() {
   document.querySelectorAll('a[href^="mailto:"]').forEach(link => {
     const email = link.getAttribute('href').slice('mailto:'.length);
@@ -1216,7 +1203,7 @@ function initFeedbackForm() {
 
 function initTouchSafetyTaps() {
   if (!isMobileViewport()) return;
-  const SELECTOR = '.site-updated-date, .site-updated-title, .social-icons a, #logoBtn';
+  const SELECTOR = '.site-updated-date, .site-updated-title, .social-icons a';
   let armed = null;
   let armTimer = null;
 
@@ -1282,7 +1269,23 @@ function initSkillsTicker() {
   let lastT = 0;
   let flingVelocity = 0;
 
+  const introOn = document.documentElement.hasAttribute('data-intro');
+  let tau = 400;
+  let introStartAt = 0;
+  let introPending = false;
+  let introLive = false;
+  if (introOn && !reducedMotion && !isMobileViewport()) {
+    const k = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--k')) || 1;
+    tau = 500 * k;
+    pos = track.parentElement.clientWidth;
+    direction = -1;
+    velocity = 0;
+    introStartAt = performance.now() + 1500 * k;
+    introPending = true;
+  }
+
   function wrapPos(p) {
+    if (introLive && p > 0) return p;
     if (groupWidth <= 0) return p;
     p = p % groupWidth;
     if (p > 0) p -= groupWidth;
@@ -1330,10 +1333,17 @@ function initSkillsTicker() {
   function frame(now) {
     const dt = Math.min(now - lastFrame, 50);
     lastFrame = now;
+    if (introPending && now >= introStartAt) {
+      introPending = false;
+      introLive = true;
+      velocity = -(autoSpeed + 1.4 * track.parentElement.clientWidth / tau);
+      setTimeout(() => { introLive = false; tau = 400; }, tau * 6);
+    }
+    if (introPending) { track.style.transform = `translateX(${pos}px)`; requestAnimationFrame(frame); return; }
     if (!dragging && document.hasFocus()) {
 
       const target = direction * autoSpeed;
-      velocity += (target - velocity) * Math.min(dt / 400, 1);
+      velocity += (target - velocity) * Math.min(dt / tau, 1);
       pos += velocity * dt;
     }
     pos = wrapPos(pos);
@@ -1352,6 +1362,8 @@ async function loadProjects() {
     renderCarousel(projects);
     renderFiles(projects);
     initCarousel();
+    initCardClicks();
+    playCarouselIntro();
     initRepoUpdated();
     document.getElementById('projectCount').textContent = projects.length;
     localStorage.setItem('pc', projects.length);
@@ -1431,17 +1443,14 @@ function initRepoUpdated() {
 function initMobileHeroLayout() {
   if (!isMobileViewport()) return;
   const cvLink = document.querySelector('.cv-link');
-  const socialIcons = document.querySelector('.social-icons');
-  const pdfPanel = document.getElementById('pdfPanel');
   if (cvLink) cvLink.textContent = 'View CV';
-  if (socialIcons && pdfPanel) pdfPanel.appendChild(socialIcons);
 }
 
 initDarkMode();
+initFilesDropdown();
 initEmailCopy();
 initSkillsTicker();
 initTouchSafetyTaps();
-initEasedScroll();
 initCVFeedback();
 initFeedbackForm();
 initMobileHeroLayout();
@@ -1450,23 +1459,17 @@ const cachedProjectCount = localStorage.getItem('pc');
 if (cachedProjectCount) document.getElementById('projectCount').textContent = cachedProjectCount;
 
 loadProjects();
-initPDF();
+schedulePrintPages();
 document.getElementById('year').textContent = new Date().getFullYear();
 
-const FADE_FLAG = 'breakpointFade';
+const BREAKPOINT_FLAG = 'breakpointReload';
 let breakpointReloadTimer = null;
 window.matchMedia(NARROW_SCREEN).addEventListener('change', () => {
-  document.body.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 250, easing: 'ease-in', fill: 'forwards' });
   clearTimeout(breakpointReloadTimer);
   breakpointReloadTimer = setTimeout(() => {
-    try { sessionStorage.setItem(FADE_FLAG, '1'); } catch (e) {}
+    try { sessionStorage.setItem(BREAKPOINT_FLAG, '1'); } catch (e) {}
     location.reload();
-  }, 280);
+  }, 150);
 });
 
-try {
-  if (sessionStorage.getItem(FADE_FLAG)) {
-    sessionStorage.removeItem(FADE_FLAG);
-    document.body.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 450, easing: 'ease-out' });
-  }
-} catch (e) {}
+try { sessionStorage.removeItem(BREAKPOINT_FLAG); } catch (e) {}
